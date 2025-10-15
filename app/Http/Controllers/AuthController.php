@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -12,6 +13,7 @@ class AuthController extends Controller
     {
         return view('login.login');
     }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -30,6 +32,7 @@ class AuthController extends Controller
             'name' => 'Usuario o contraseña incorrectos.',
         ])->onlyInput('name');
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -37,5 +40,28 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
+    }
+
+    public function showRegisterForm()
+    {
+        return view('login.register');
+    }
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:users,name',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6|confirmed', // Usa password_confirmation
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // encriptar contraseña
+        ]);
+
+        Auth::login($user);
+
+        return redirect('/dashboard')->with('success', 'Usuario creado correctamente.');
     }
 }
