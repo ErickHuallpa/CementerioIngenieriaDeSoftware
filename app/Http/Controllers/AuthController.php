@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Persona;
 
 class AuthController extends Controller
 {
@@ -25,7 +26,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
@@ -46,22 +47,37 @@ class AuthController extends Controller
     {
         return view('login.register');
     }
+
     public function register(Request $request)
     {
         $request->validate([
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'ci' => 'required|string|max:20|unique:persona,ci',
+            'telefono' => 'nullable|string|max:15',
+            'direccion' => 'nullable|string|max:255',
+            'email' => 'required|string|email|max:255|unique:persona,email|unique:users,email',
             'name' => 'required|string|max:255|unique:users,name',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6|confirmed', // Usa password_confirmation
+            'password' => 'required|string|min:8|confirmed',
+            'id_tipo_persona' => 'required|integer|exists:tipo_persona,id_tipo_persona',
         ]);
-
+        $persona = Persona::create([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'ci' => $request->ci,
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'email' => $request->email,
+            'id_tipo_persona' => $request->id_tipo_persona,
+        ]);
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // encriptar contraseña
+            'password' => Hash::make($request->password),
+            'id_persona' => $persona->id_persona,
         ]);
-
         Auth::login($user);
 
-        return redirect('/dashboard')->with('success', 'Usuario creado correctamente.');
+        return redirect('/dashboard')->with('success', 'Usuario administrador creado correctamente.');
     }
 }

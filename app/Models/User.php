@@ -17,7 +17,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'id_persona',
     ];
 
@@ -29,34 +28,22 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
     public function persona()
     {
         return $this->belongsTo(Persona::class, 'id_persona', 'id_persona');
     }
-
-    public function scopePorRol($query, string $rol)
-    {
-        return $query->where('role', $rol);
-    }
-
     public function scopePorUsername($query, string $username)
     {
         return $query->where('name', $username);
     }
-
     public function getNombreCompletoAttribute()
     {
         return $this->persona ? $this->persona->nombre_completo : $this->name;
     }
-
-    public function esAdmin()
+    public function getTipoPersonaAttribute()
     {
-        return $this->role === 'admin';
-    }
-
-    public function esEmpleado()
-    {
-        return $this->role === 'empleado';
+        return $this->persona && $this->persona->tipoPersona
+            ? $this->persona->tipoPersona->nombre_tipo
+            : 'Sin tipo';
     }
 }
