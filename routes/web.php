@@ -7,6 +7,8 @@ use App\Http\Controllers\PabellonController;
 use App\Http\Controllers\NichoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DifuntoController;
+use App\Http\Controllers\UserController;
+
 
 Route::get('/', function () {
     return redirect('/login');
@@ -19,6 +21,12 @@ Route::get('/pabellon/crear', [PabellonController::class, 'create'])->name('pabe
 Route::post('/pabellon', [PabellonController::class, 'store'])->name('pabellon.store');
 Route::get('/nicho/crear', [NichoController::class, 'create'])->name('nicho.create');
 Route::post('/nicho', [NichoController::class, 'store'])->name('nicho.store');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
 
 Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
 Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');

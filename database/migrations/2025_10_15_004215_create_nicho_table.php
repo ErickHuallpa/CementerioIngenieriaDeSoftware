@@ -11,9 +11,12 @@ return new class extends Migration
         Schema::create('nicho', function (Blueprint $table) {
             $table->id('id_nicho');
             $table->unsignedBigInteger('id_pabellon');
-            $table->foreign('id_pabellon')->references('id_pabellon')->on('pabellon')->onDelete('cascade');
+            $table->foreign('id_pabellon')
+                ->references('id_pabellon')
+                ->on('pabellon')
+                ->onDelete('cascade');
             $table->integer('fila');
-            $table->integer('columna');
+            $table->char('columna', 1);
             $table->enum('posicion', ['superior', 'medio', 'inferior']);
             $table->decimal('costo_alquiler', 10, 2)->nullable();
             $table->enum('estado', ['disponible', 'ocupado', 'por_vencer', 'vencido'])->default('disponible');

@@ -41,6 +41,7 @@
 
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Panel Principal</a></li>
+                        <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-tie"></i> Personal</a></li>
                         <li><a href="#" class="nav-link"><i class="fas fa-map-marked-alt"></i> Mapa de Nichos</a></li>
                         <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-book"></i> Registro de Difuntos</a></li>
                         <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users"></i> Clientes</a></li>
