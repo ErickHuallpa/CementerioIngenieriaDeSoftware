@@ -9,6 +9,8 @@ use App\Models\Nicho;
 use App\Models\ContratoAlquiler;
 use App\Models\ProgramacionEntierro;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class DifuntoController extends Controller
 {
@@ -37,7 +39,10 @@ class DifuntoController extends Controller
             'id_trabajador' => 'required|exists:persona,id_persona',
         ]);
 
-        DB::transaction(function () use ($request) {
+        $contrato = null;
+        $difunto = null;
+
+        DB::transaction(function () use ($request, &$difunto, &$contrato) {
             $persona = Persona::create([
                 'nombre' => $request->nombre,
                 'apellido' => $request->apellido,
@@ -68,7 +73,7 @@ class DifuntoController extends Controller
                 'fecha_vencimiento' => $fechaFin,
             ]);
 
-            ContratoAlquiler::create([
+            $contrato = ContratoAlquiler::create([
                 'id_difunto' => $difunto->id_difunto,
                 'id_nicho' => $nicho->id_nicho,
                 'fecha_inicio' => $fechaEntierro,
@@ -88,6 +93,11 @@ class DifuntoController extends Controller
             ]);
         });
 
-        return redirect()->route('difunto.index')->with('success', 'Difunto registrado correctamente con programación de entierro.');
+        $usuario = Auth::user();
+        $difunto->load(['persona', 'doliente', 'nicho.pabellon']);
+        $contrato->load('nicho');
+        $pdf = Pdf::loadView('pdf.contrato_difunto', compact('difunto', 'contrato', 'usuario'));
+
+        return $pdf->download('Contrato_Difunto_' . $difunto->persona->nombreCompleto . '.pdf');
     }
 }
