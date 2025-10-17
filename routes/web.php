@@ -27,6 +27,8 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
+Route::get('/nicho/mapa', [NichoController::class, 'mapa'])->name('nicho.mapa');
+
 
 Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
 Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');

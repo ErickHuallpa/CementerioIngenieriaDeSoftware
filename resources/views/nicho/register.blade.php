@@ -44,7 +44,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="columna" class="form-label">Columna</label>
-                        <input type="number" id="columna" name="columna" class="form-control" min="1" required>
+                        <input type="text" id="columna" name="columna" class="form-control" required>
                     </div>
                 </div>
 

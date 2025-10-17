@@ -1,6 +1,49 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .badge-status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .badge-available {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .badge-occupied {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .badge-danger {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+
+    .card-dashboard {
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .stats-number {
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+    .stats-label {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .card-icon {
+        font-size: 1.8rem;
+        color: #007bff;
+    }
+</style>
+
 <div class="header d-flex justify-content-between align-items-center">
     <div>
         <h2 class="mb-0">Panel Principal</h2>
@@ -14,16 +57,9 @@
         <a href="{{ route('nicho.create') }}" class="btn btn-success">
             <i class="fas fa-layer-group me-1"></i> Registrar Nicho
         </a>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger">
-                <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
-            </button>
-        </form>
     </div>
 </div>
 
-<!-- Dashboard Stats -->
 <div class="row mt-4">
     <div class="col-md-3">
         <div class="card card-dashboard">
@@ -91,29 +127,25 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Pabellón</th>
-                        <th>Fila</th>
-                        <th>Columna</th>
+                        <th>Ubicación</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($listaNichos as $nicho)
                         <tr>
-                            <td>#{{ $nicho->id_nicho }}</td>
                             <td>{{ $nicho->pabellon->nombre ?? '—' }}</td>
-                            <td>{{ $nicho->fila }}</td>
-                            <td>{{ $nicho->columna }}</td>
+                            <td>{{ $nicho->fila }}{{ $nicho->columna }}</td>
                             <td>
                                 @if ($nicho->estado === 'disponible')
-                                    <span class="badge badge-status badge-available">Disponible</span>
+                                    <span class="badge-status badge-available">Disponible</span>
                                 @elseif ($nicho->estado === 'ocupado')
-                                    <span class="badge badge-status badge-occupied">Ocupado</span>
+                                    <span class="badge-status badge-occupied">Ocupado</span>
                                 @elseif ($nicho->estado === 'por_vencer')
-                                    <span class="badge badge-status badge-warning">Por Vencer</span>
+                                    <span class="badge-status badge-warning">Por Vencer</span>
                                 @elseif ($nicho->estado === 'vencido')
-                                    <span class="badge badge-status badge-danger">Vencido</span>
+                                    <span class="badge-status badge-danger">Vencido</span>
                                 @else
                                     <span class="badge bg-secondary">{{ ucfirst($nicho->estado) }}</span>
                                 @endif
