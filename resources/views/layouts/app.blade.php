@@ -43,10 +43,7 @@
                         <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-tie"></i> Personal</a></li>
                         <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-marked-alt"></i> Mapa de Nichos</a></li>
                         <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-book"></i> Registro de Difuntos</a></li>
-
-                        <!-- Nuevo enlace para Incineraciones -->
-                        <li><a href="{{ route('incineraciones.index') }}" class="nav-link"><i class="fas fa-fire"></i> Incineraciones</a></li>
-
+                        <li><a href="{{ route('incineracion.index') }}" class="nav-link"><i class="fas fa-fire"></i> Incineraciones</a></li>
                         <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users"></i> Clientes</a></li>
                         <li><a href="#" class="nav-link"><i class="fas fa-file-invoice-dollar"></i> Pagos</a></li>
                         <li><a href="#" class="nav-link"><i class="fas fa-chart-bar"></i> Reportes</a></li>

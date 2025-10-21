@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Incineracion;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Difunto;
 use App\Models\Incineracion;
 use App\Models\ContratoAlquiler;
@@ -10,37 +9,24 @@ use App\Models\ServicioExtra;
 use App\Models\Persona;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class IncineracionController extends Controller
 {
+
     public function index()
     {
-        $incineraciones = Incineracion::with(['difunto.persona', 'responsable'])
-            ->orderBy('fecha_incineracion', 'desc')
-            ->paginate(10);
+        $incineraciones = Incineracion::with(['difunto.persona', 'responsable'])->orderBy('created_at', 'desc')->get();
 
-        return view('incineracion.index', compact('incineraciones'));
-    }
-
-    public function create()
-    {
-        // Obtener difuntos que no están incinerados y tienen contrato activo
-        $difuntos = Difunto::where('estado', '!=', 'incinerado')
-            ->whereHas('contratos', function($query) {
-                $query->where('estado', 'activo');
-            })
-            ->with(['persona', 'contratos' => function($query) {
-                $query->where('estado', 'activo');
-            }])
+        $difuntos = Difunto::with('persona')
+            ->where('estado', '!=', 'incinerado')
+            ->orderBy('id_difunto', 'desc')
             ->get();
 
-        // Obtener trabajadores/responsables (personas que son trabajadores)
-        $responsables = Persona::where('tipo', 'trabajador')
-            ->orWhere('tipo', 'empleado')
-            ->orWhere('tipo', 'administrativo')
-            ->get();
+        $trabajadores = Persona::where('id_tipo_persona', 4)->orderBy('nombre')->get();
 
-        return view('incineracion.create', compact('difuntos', 'responsables'));
+        return view('incineracion.index', compact('incineraciones', 'difuntos', 'trabajadores'));
     }
 
     public function store(Request $request)
@@ -50,90 +36,62 @@ class IncineracionController extends Controller
             'id_responsable' => 'required|exists:persona,id_persona',
             'fecha_incineracion' => 'required|date',
             'tipo' => 'required|in:individual,colectiva',
-            'costo_incineracion' => 'required|numeric|min:0',
-            'costo_servicio_extra' => 'nullable|numeric|min:0',
-            'observaciones_servicio' => 'nullable|string|max:500',
+            'costo' => 'required|numeric|min:0',
+            'observaciones' => 'nullable|string|max:1000',
         ]);
 
-        try {
-            DB::beginTransaction();
+        $incineracion = null;
 
-            // Paso 1: Cambiar estado del difunto a "incinerado"
+        DB::transaction(function () use ($request, &$incineracion) {
             $difunto = Difunto::findOrFail($request->id_difunto);
             $difunto->update(['estado' => 'incinerado']);
-
-            // Paso 2: Cancelar contrato activo si existe
-            $contratoActivo = ContratoAlquiler::where('id_difunto', $request->id_difunto)
+            $contratoActivo = ContratoAlquiler::where('id_difunto', $difunto->id_difunto)
                 ->where('estado', 'activo')
                 ->first();
-
             if ($contratoActivo) {
-                $contratoActivo->update(['estado' => 'cancelado']);
+                $contratoActivo->update([
+                    'estado' => 'cancelado',
+                    'fecha_fin' => now()->toDateString(),
+                ]);
             }
-
-            // Paso 3: No se crea nuevo contrato (según especificación)
-
-            // Paso 4: Registrar incineración
+            if ($difunto->id_nicho) {
+                $difunto->nicho->update([
+                    'estado' => 'disponible',
+                    'fecha_ocupacion' => null,
+                    'fecha_vencimiento' => null,
+                ]);
+            }
             $incineracion = Incineracion::create([
-                'id_difunto' => $request->id_difunto,
+                'id_difunto' => $difunto->id_difunto,
                 'id_responsable' => $request->id_responsable,
                 'fecha_incineracion' => $request->fecha_incineracion,
                 'tipo' => $request->tipo,
-                'costo' => $request->costo_incineracion,
+                'costo' => $request->costo,
             ]);
+            ServicioExtra::create([
+                'id_difunto' => $difunto->id_difunto,
+                'id_trabajador' => $request->id_responsable,
+                'tipo_servicio' => 'incineracion',
+                'fecha_servicio' => $request->fecha_incineracion,
+                'costo' => $request->costo,
+                'observaciones' => $request->observaciones,
+            ]);
+        });
+        $incineracion = Incineracion::with(['difunto.persona', 'responsable'])
+            ->find($incineracion->id_incineracion);
 
-            // Paso 5: Registrar servicio extra si hay costo adicional
-            if ($request->costo_servicio_extra && $request->costo_servicio_extra > 0) {
-                ServicioExtra::create([
-                    'id_difunto' => $request->id_difunto,
-                    'id_trabajador' => $request->id_responsable,
-                    'tipo_servicio' => 'incineracion',
-                    'fecha_servicio' => $request->fecha_incineracion,
-                    'costo' => $request->costo_servicio_extra,
-                    'observaciones' => $request->observaciones_servicio,
-                ]);
-            }
+        $data = [
+            'incineracion' => $incineracion,
+            'difunto' => $incineracion->difunto,
+            'responsable' => $incineracion->responsable,
+            'usuario' => Auth::user(),
+        ];
 
-            DB::commit();
+        $pdf = Pdf::loadView('pdf.incineracion', $data)->setPaper('a4', 'portrait');
 
-            return redirect()->route('incineracion.index')
-                ->with('success', 'Proceso de incineración registrado exitosamente.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error al registrar la incineración: ' . $e->getMessage())
-                ->withInput();
-        }
+        return $pdf->download(
+            'incineracion_' . $incineracion->id_difunto . '_' . now()->format('Ymd_His') . '.pdf'
+        );
     }
 
-    public function show($id)
-    {
-        $incineracion = Incineracion::with([
-            'difunto.persona',
-            'responsable',
-            'difunto.serviciosExtras' => function($query) {
-                $query->where('tipo_servicio', 'incineracion');
-            }
-        ])->findOrFail($id);
-
-        return view('incineracion.show', compact('incineracion'));
-    }
-
-    public function getDifuntoInfo($id)
-    {
-        $difunto = Difunto::with([
-            'persona',
-            'contratos' => function($query) {
-                $query->where('estado', 'activo');
-            },
-            'contratos.nicho'
-        ])->findOrFail($id);
-
-        return response()->json([
-            'difunto' => $difunto,
-            'persona' => $difunto->persona,
-            'contrato_activo' => $difunto->contratos->first()
-        ]);
-    }
 }

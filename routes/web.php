@@ -8,7 +8,7 @@ use App\Http\Controllers\NichoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DifuntoController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Incineracion\IncineracionController;
+use App\Http\Controllers\IncineracionController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -35,24 +35,8 @@ Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.st
 Route::get('/difuntos', [DifuntoController::class, 'index'])->name('difunto.index');
 Route::post('/difuntos', [DifuntoController::class, 'store'])->name('difunto.store');
 
-// RUTAS DE INCINERACIÓN - ACTUALIZADAS
-Route::prefix('incineracion')->name('incineracion.')->group(function () {
-    Route::get('/', [IncineracionController::class, 'index'])->name('index');
-    Route::get('/create', [IncineracionController::class, 'create'])->name('create');
-    Route::post('/', [IncineracionController::class, 'store'])->name('store');
-    Route::get('/{id}', [IncineracionController::class, 'show'])->name('show');
-    Route::get('/difunto/{id}', [IncineracionController::class, 'getDifuntoInfo'])->name('difunto.info');
-});
-
-// Rutas adicionales que tenías (las mantengo por si las necesitas)
-Route::get('incineraciones/tipo/{tipo}', [IncineracionController::class, 'porTipo'])
-    ->name('incineraciones.tipo');
-
-Route::post('incineraciones/filtrar-fechas', [IncineracionController::class, 'entreFechas'])
-    ->name('incineraciones.filtrar-fechas');
-
-Route::get('mis-incineraciones', [IncineracionController::class, 'misIncineraciones'])
-    ->name('incineraciones.mis-incineraciones');
+Route::get('/incineracion', [IncineracionController::class, 'index'])->name('incineracion.index');
+Route::post('/incineracion', [IncineracionController::class, 'store'])->name('incineracion.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
