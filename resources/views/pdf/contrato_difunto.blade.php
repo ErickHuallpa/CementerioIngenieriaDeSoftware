@@ -4,55 +4,87 @@
     <meta charset="UTF-8">
     <title>Contrato de Alquiler - {{ $difunto->persona->nombreCompleto }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 30px; color: #333; }
-        h2, h3 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        td, th { padding: 8px; border: 1px solid #555; vertical-align: top; }
-        .no-border td { border: none; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 35px; text-align: justify; }
+        h2, h4 { text-align: center; margin-bottom: 5px; }
+        .seccion { margin-top: 18px; }
         .firma { margin-top: 60px; text-align: center; }
-        .firma span { display: block; margin-top: 5px; border-top: 1px solid #000; width: 200px; margin-left: auto; margin-right: auto; }
+        .firma span { display: block; margin-top: 5px; border-top: 1px solid #000; width: 220px; margin-left: auto; margin-right: auto; }
+        p { line-height: 1.45; }
     </style>
 </head>
 <body>
 
-    <h2>Municipalidad del Cementerio</h2>
-    <h3>Contrato de Asignación de Nicho</h3>
+    <h2>CONTRATO DE ARRENDAMIENTO DE NICHO</h2>
+    <h4>Cementerio Municipal</h4>
 
-    <p><strong>Fecha de emisión:</strong> {{ now()->format('d/m/Y H:i') }}</p>
-    <p><strong>N° de Boleta:</strong> {{ $contrato->boleta_numero }}</p>
+    <p><strong>Boleta N°:</strong> {{ $contrato->boleta_numero }} <br>
+    <strong>Fecha de emisión:</strong> {{ now()->format('d/m/Y') }}</p>
 
-    <h4>Datos del Difunto</h4>
-    <table>
-        <tr><td><strong>Nombre:</strong></td><td>{{ $difunto->persona->nombreCompleto }}</td></tr>
-        <tr><td><strong>Fecha de fallecimiento:</strong></td><td>{{ $difunto->fecha_fallecimiento }}</td></tr>
-        <tr><td><strong>Fecha de entierro:</strong></td><td>{{ $difunto->fecha_entierro }}</td></tr>
-    </table>
+    <div class="seccion">
+        <p>
+            En la ciudad, a la fecha indicada, la Administración del Cementerio Municipal (en adelante
+            <strong>EL ARRENDADOR</strong>), y el(a) Sr./Sra.
+            <strong>{{ $difunto->doliente->nombreCompleto ?? '—' }}</strong>, con
+            CI: <strong>{{ $difunto->doliente->ci ?? '—' }}</strong>,
+            (en adelante <strong>EL ARRENDATARIO</strong>), suscriben el presente Contrato de Arrendamiento
+            de Nicho, sujeto a las cláusulas siguientes:
+        </p>
+    </div>
 
-    <h4>Datos del Doliente</h4>
-    <table>
-        <tr><td><strong>Nombre:</strong></td><td>{{ $difunto->doliente->nombreCompleto ?? '—' }}</td></tr>
-        <tr><td><strong>CI:</strong></td><td>{{ $difunto->doliente->ci ?? '—' }}</td></tr>
-    </table>
+    <div class="seccion">
+        <strong>PRIMERA – OBJETO</strong>
+        <p>
+            EL ARRENDADOR otorga en uso el nicho identificado como:
+            <strong>Pabellón {{ $difunto->nicho->pabellon->nombre ?? 'Sin Pabellón' }},
+            Fila {{ $difunto->nicho->fila }}, Columna {{ $difunto->nicho->columna }}</strong>,
+            para el entierro del difunto
+            <strong>{{ $difunto->persona->nombreCompleto }}</strong>,
+            fallecido el <strong>{{ $difunto->fecha_fallecimiento }}</strong> y cuyo entierro se realizará
+            el <strong>{{ $difunto->fecha_entierro }}</strong>.
+        </p>
+    </div>
 
-    <h4>Datos del Nicho</h4>
-    <table>
-        <tr><td><strong>Pabellón:</strong></td><td>{{ $difunto->nicho->pabellon->nombre ?? 'Sin Pabellón' }}</td></tr>
-        <tr><td><strong>Ubicación:</strong></td><td>Fila {{ $difunto->nicho->fila }}, Columna {{ $difunto->nicho->columna }}</td></tr>
-        <tr><td><strong>Estado:</strong></td><td>{{ ucfirst($difunto->nicho->estado) }}</td></tr>
-        <tr><td><strong>Costo de alquiler:</strong></td><td>Bs. {{ number_format($difunto->nicho->costo_alquiler, 2) }}</td></tr>
-        <tr><td><strong>Fecha de vencimiento:</strong></td><td>{{ $difunto->nicho->fecha_vencimiento }}</td></tr>
-    </table>
+    <div class="seccion">
+        <strong>SEGUNDA – DURACIÓN</strong>
+        <p>
+            El presente contrato tiene una vigencia desde el
+            <strong>{{ $contrato->fecha_inicio }}</strong> hasta el
+            <strong>{{ $contrato->fecha_fin }}</strong>. Vencido el plazo, el arrendatario deberá renovar
+            o solicitar exhumación conforme al reglamento interno.
+        </p>
+    </div>
 
-    <h4>Datos del Contrato</h4>
-    <table>
-        <tr><td><strong>Fecha inicio:</strong></td><td>{{ $contrato->fecha_inicio }}</td></tr>
-        <tr><td><strong>Fecha fin:</strong></td><td>{{ $contrato->fecha_fin }}</td></tr>
-        <tr><td><strong>Monto total:</strong></td><td>Bs. {{ number_format($contrato->monto, 2) }}</td></tr>
-        <tr><td><strong>Registrado por:</strong></td><td>{{ $usuario->nombre ?? $usuario->name ?? '—' }}</td></tr>
-    </table>
+    <div class="seccion">
+        <strong>TERCERA – COSTO Y PAGO</strong>
+        <p>
+            El arrendatario cancela la suma de
+            <strong>Bs. {{ number_format($contrato->monto, 2) }}</strong>, correspondiente al uso del
+            nicho por el período establecido.
+        </p>
+    </div>
+
+    <div class="seccion">
+        <strong>CUARTA – OBLIGACIONES</strong>
+        <p>
+            El Arrendatario se compromete a respetar el reglamento del cementerio y mantener el nicho en
+            buen estado. El Arrendador garantiza el uso pacífico del mismo durante la vigencia del contrato.
+        </p>
+    </div>
+
+    <div class="seccion">
+        <strong>QUINTA – ACEPTACIÓN</strong>
+        <p>
+            Ambas partes aceptan el contenido del presente contrato, firmando al pie en señal de conformidad.
+        </p>
+    </div>
 
     <div class="firma">
-        <span>Firma del Responsable</span>
+        <span>Firma del Arrendatario</span>
+    </div>
+
+    <div class="firma" style="margin-top: 40px;">
+        <span>Responsable - Cementerio</span>
+        <small>{{ $usuario->nombre ?? $usuario->name }}</small>
     </div>
 
 </body>

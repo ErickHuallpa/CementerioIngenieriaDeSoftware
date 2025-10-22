@@ -9,6 +9,8 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DifuntoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncineracionController;
+use App\Http\Controllers\FallecidoController;
+
 
 Route::get('/', function () {
     return redirect('/login');
@@ -33,11 +35,27 @@ Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.ind
 Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');
 
 Route::get('/difuntos', [DifuntoController::class, 'index'])->name('difunto.index');
+Route::get('/difuntos/create', [DifuntoController::class, 'create'])->name('difunto.create');
 Route::post('/difuntos', [DifuntoController::class, 'store'])->name('difunto.store');
+Route::get('/difuntos/{id}/edit', [DifuntoController::class, 'edit'])->name('difunto.edit');
+Route::put('/difuntos/{id}', [DifuntoController::class, 'update'])->name('difunto.update');
+Route::get('/difuntos/{id}/pdf', [DifuntoController::class, 'downloadPdf'])->name('difunto.downloadPdf');
 
-Route::get('/incineracion', [IncineracionController::class, 'index'])->name('incineracion.index');
-Route::post('/incineracion', [IncineracionController::class, 'store'])->name('incineracion.store');
+Route::get('incineraciones', [IncineracionController::class, 'index'])->name('incineracion.index');
+Route::get('incineraciones/create', [IncineracionController::class, 'create'])->name('incineracion.create');
+Route::post('incineraciones', [IncineracionController::class, 'store'])->name('incineracion.store');
+Route::get('incineraciones/{id}/edit', [IncineracionController::class, 'edit'])->name('incineracion.edit');
+Route::put('incineraciones/{id}', [IncineracionController::class, 'update'])->name('incineracion.update');
+Route::get('incineraciones/{id}/pdf', [IncineracionController::class, 'downloadPdf'])->name('incineracion.downloadPdf');
+
+Route::get('/fallecidos', [FallecidoController::class, 'index'])->name('fallecido.index');
+Route::get('/fallecidos/create', [FallecidoController::class, 'create'])->name('fallecido.create');
+Route::post('/fallecidos', [FallecidoController::class, 'store'])->name('fallecido.store');
+Route::get('/fallecidos/{id}/edit', [FallecidoController::class, 'edit'])->name('fallecido.edit');
+Route::put('/fallecidos/{id}', [FallecidoController::class, 'update'])->name('fallecido.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 });
+
+

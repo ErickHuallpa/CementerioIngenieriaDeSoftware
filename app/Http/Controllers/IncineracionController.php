@@ -14,19 +14,27 @@ use Illuminate\Support\Facades\Auth;
 
 class IncineracionController extends Controller
 {
-
     public function index()
     {
-        $incineraciones = Incineracion::with(['difunto.persona', 'responsable'])->orderBy('created_at', 'desc')->get();
+        $incineraciones = Incineracion::with(['difunto.persona', 'responsable'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
+        return view('incineracion.index', compact('incineraciones'));
+    }
+
+    public function create()
+    {
         $difuntos = Difunto::with('persona')
             ->where('estado', '!=', 'incinerado')
             ->orderBy('id_difunto', 'desc')
             ->get();
 
-        $trabajadores = Persona::where('id_tipo_persona', 4)->orderBy('nombre')->get();
+        $trabajadores = Persona::where('id_tipo_persona', 4)
+            ->orderBy('nombre')
+            ->get();
 
-        return view('incineracion.index', compact('incineraciones', 'difuntos', 'trabajadores'));
+        return view('incineracion.register_edit', compact('difuntos', 'trabajadores'));
     }
 
     public function store(Request $request)
@@ -40,25 +48,25 @@ class IncineracionController extends Controller
             'observaciones' => 'nullable|string|max:1000',
         ]);
 
-        $incineracion = null;
-
         DB::transaction(function () use ($request, &$incineracion) {
-            $difunto = Difunto::findOrFail($request->id_difunto);
-            $difunto->update(['estado' => 'incinerado']);
-            $contratoActivo = ContratoAlquiler::where('id_difunto', $difunto->id_difunto)
-                ->where('estado', 'activo')
-                ->first();
-            if ($contratoActivo) {
-                $contratoActivo->update([
-                    'estado' => 'cancelado',
-                    'fecha_fin' => now()->toDateString(),
-                ]);
-            }
-            if ($difunto->id_nicho) {
-                $difunto->nicho->update([
+            $difunto = Difunto::with('nicho')->findOrFail($request->id_difunto);
+            $nicho = $difunto->nicho;
+            $difunto->update([
+                'estado' => 'incinerado',
+                'id_nicho' => null,
+            ]);
+            if ($nicho) {
+                $nicho->update([
                     'estado' => 'disponible',
                     'fecha_ocupacion' => null,
                     'fecha_vencimiento' => null,
+                ]);
+            }
+            if ($contrato = ContratoAlquiler::where('id_difunto', $difunto->id_difunto)
+                ->where('estado', 'activo')->first()) {
+                $contrato->update([
+                    'estado' => 'cancelado',
+                    'fecha_fin' => now()->toDateString(),
                 ]);
             }
             $incineracion = Incineracion::create([
@@ -77,21 +85,24 @@ class IncineracionController extends Controller
                 'observaciones' => $request->observaciones,
             ]);
         });
-        $incineracion = Incineracion::with(['difunto.persona', 'responsable'])
-            ->find($incineracion->id_incineracion);
 
-        $data = [
+        return redirect()->route('incineracion.index')
+            ->with('success', 'Incineración registrada correctamente.');
+    }
+
+    public function downloadPdf($id)
+    {
+        $incineracion = Incineracion::with(['difunto.persona', 'responsable'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('pdf.incineracion', [
             'incineracion' => $incineracion,
             'difunto' => $incineracion->difunto,
             'responsable' => $incineracion->responsable,
             'usuario' => Auth::user(),
-        ];
+        ])->setPaper('a4', 'portrait');
 
-        $pdf = Pdf::loadView('pdf.incineracion', $data)->setPaper('a4', 'portrait');
+        ini_set('memory_limit', '256M');
 
-        return $pdf->download(
-            'incineracion_' . $incineracion->id_difunto . '_' . now()->format('Ymd_His') . '.pdf'
-        );
+        return $pdf->download('incineracion_' . now()->format('Ymd_His') . '.pdf');
     }
-
 }

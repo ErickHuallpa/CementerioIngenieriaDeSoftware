@@ -17,54 +17,102 @@ class DifuntoController extends Controller
     public function index()
     {
         $difuntos = Difunto::with(['persona', 'doliente', 'nicho.pabellon'])->get();
+        return view('difunto.index', compact('difuntos'));
+    }
+
+    public function create()
+    {
+        // Recuperar difuntos sin nicho
+        $difuntosSinNicho = Difunto::with('persona', 'doliente', 'programacionesEntierro')
+            ->whereNull('id_nicho')
+            ->where('estado', 'registrado')
+            ->get();
+
         $dolientes = Persona::whereHas('tipoPersona', function ($q) {
             $q->whereRaw('LOWER(nombre_tipo) = ?', ['doliente']);
         })->get();
+
         $nichosDisponibles = Nicho::with('pabellon')
             ->whereRaw('LOWER(estado) = ?', ['disponible'])
             ->get();
+
         $trabajadores = Persona::where('id_tipo_persona', 2)->get();
 
-        return view('difunto.index', compact('difuntos', 'dolientes', 'nichosDisponibles', 'trabajadores'));
+        return view('difunto.register_edit', compact(
+            'difuntosSinNicho', 'dolientes', 'nichosDisponibles', 'trabajadores'
+        ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'fecha_fallecimiento' => 'required|date',
-            'id_doliente' => 'required|exists:persona,id_persona',
             'id_nicho' => 'required|exists:nicho,id_nicho',
             'id_trabajador' => 'required|exists:persona,id_persona',
         ]);
 
-        $contrato = null;
-        $difunto = null;
+        DB::transaction(function () use ($request) {
 
-        DB::transaction(function () use ($request, &$difunto, &$contrato) {
-            $persona = Persona::create([
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'ci' => $request->ci ?? null,
-                'telefono' => null,
-                'direccion' => null,
-                'email' => null,
-                'id_tipo_persona' => null,
-            ]);
+            if ($request->filled('id_difunto_existente')) {
+                // Recuperar difunto existente
+                $difunto = Difunto::with('persona')->findOrFail($request->id_difunto_existente);
 
-            $fechaFallecimiento = $request->fecha_fallecimiento;
-            $fechaEntierro = date('Y-m-d', strtotime('+1 day'));
+                // Actualizar solo nicho y estado
+                $difunto->update([
+                    'id_nicho' => $request->id_nicho,
+                    'fecha_entierro' => date('Y-m-d', strtotime('+1 day')),
+                    'estado' => 'en_nicho',
+                ]);
+
+                // Crear programación de entierro
+                ProgramacionEntierro::create([
+                    'id_difunto' => $difunto->id_difunto,
+                    'id_trabajador' => $request->id_trabajador,
+                    'fecha_programada' => $difunto->fecha_entierro,
+                    'hora_programada' => '10:00:00',
+                    'estado' => 'pendiente',
+                ]);
+
+            } else {
+                // Registrar nuevo difunto y persona
+                $request->validate([
+                    'nombre' => 'required|string|max:100',
+                    'apellido' => 'required|string|max:100',
+                    'fecha_fallecimiento' => 'required|date',
+                    'id_doliente' => 'required|exists:persona,id_persona',
+                    'id_trabajador' => 'required|exists:persona,id_persona',
+                ]);
+
+                $persona = Persona::create([
+                    'nombre' => $request->nombre,
+                    'apellido' => $request->apellido,
+                    'ci' => $request->ci ?? null,
+                    'telefono' => null,
+                    'direccion' => null,
+                    'email' => null,
+                    'id_tipo_persona' => null,
+                ]);
+
+                $difunto = Difunto::create([
+                    'id_persona' => $persona->id_persona,
+                    'id_doliente' => $request->id_doliente,
+                    'id_nicho' => $request->id_nicho,
+                    'fecha_fallecimiento' => $request->fecha_fallecimiento,
+                    'fecha_entierro' => date('Y-m-d', strtotime('+1 day')),
+                    'estado' => 'en_nicho',
+                ]);
+
+                ProgramacionEntierro::create([
+                    'id_difunto' => $difunto->id_difunto,
+                    'id_trabajador' => $request->id_trabajador,
+                    'fecha_programada' => $difunto->fecha_entierro,
+                    'hora_programada' => '10:00:00',
+                    'estado' => 'pendiente',
+                ]);
+            }
+
+            // Actualizar nicho
+            $fechaEntierro = $difunto->fecha_entierro;
             $fechaFin = date('Y-m-d', strtotime($fechaEntierro . ' +5 years'));
-
-            $difunto = Difunto::create([
-                'id_persona' => $persona->id_persona,
-                'id_doliente' => $request->id_doliente,
-                'id_nicho' => $request->id_nicho,
-                'fecha_fallecimiento' => $fechaFallecimiento,
-                'fecha_entierro' => $fechaEntierro,
-                'estado' => 'en_nicho',
-            ]);
 
             $nicho = Nicho::findOrFail($request->id_nicho);
             $nicho->update([
@@ -73,7 +121,8 @@ class DifuntoController extends Controller
                 'fecha_vencimiento' => $fechaFin,
             ]);
 
-            $contrato = ContratoAlquiler::create([
+            // Crear contrato
+            ContratoAlquiler::create([
                 'id_difunto' => $difunto->id_difunto,
                 'id_nicho' => $nicho->id_nicho,
                 'fecha_inicio' => $fechaEntierro,
@@ -83,21 +132,62 @@ class DifuntoController extends Controller
                 'estado' => 'activo',
                 'boleta_numero' => 'B-' . strtoupper(uniqid()),
             ]);
-
-            ProgramacionEntierro::create([
-                'id_difunto' => $difunto->id_difunto,
-                'id_trabajador' => $request->id_trabajador,
-                'fecha_programada' => $fechaEntierro,
-                'hora_programada' => '10:00:00',
-                'estado' => 'pendiente',
-            ]);
         });
 
-        $usuario = Auth::user();
-        $difunto->load(['persona', 'doliente', 'nicho.pabellon']);
-        $contrato->load('nicho');
-        $pdf = Pdf::loadView('pdf.contrato_difunto', compact('difunto', 'contrato', 'usuario'));
-
-        return $pdf->download('Contrato_Difunto_' . $difunto->persona->nombreCompleto . '.pdf');
+        return redirect()->route('difunto.index')->with('success', 'Difunto registrado o asignado correctamente.');
     }
+
+    public function edit($id)
+    {
+        $difunto = Difunto::with(['persona', 'nicho.pabellon'])->findOrFail($id);
+
+        $nichosDisponibles = Nicho::with('pabellon')
+            ->whereRaw('LOWER(estado) = ?', ['disponible'])
+            ->orWhere('id_nicho', $difunto->id_nicho)
+            ->get();
+
+        return view('difunto.register_edit', compact('difunto', 'nichosDisponibles'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $difunto = Difunto::findOrFail($id);
+        $nichoAnterior = Nicho::findOrFail($difunto->id_nicho);
+
+        $request->validate([
+            'id_nicho' => 'required|exists:nicho,id_nicho',
+        ]);
+
+        DB::transaction(function () use ($difunto, $nichoAnterior, $request) {
+            $nichoAnterior->update(['estado' => 'disponible', 'fecha_ocupacion' => null, 'fecha_vencimiento' => null]);
+
+            $difunto->update(['id_nicho' => $request->id_nicho]);
+
+            $nuevoNicho = Nicho::findOrFail($request->id_nicho);
+            $nuevoNicho->update(['estado' => 'ocupado', 'fecha_ocupacion' => now()]);
+        });
+
+        return redirect()->route('difunto.index')->with('success', 'Nicho actualizado correctamente.');
+    }
+    public function downloadPdf($id)
+    {
+        $difunto = Difunto::with(['persona', 'doliente', 'nicho.pabellon'])->findOrFail($id);
+        $contrato = ContratoAlquiler::where('id_difunto', $difunto->id_difunto)->first();
+        $usuario = Auth::user();
+
+        if (!$contrato) {
+            return redirect()->route('difunto.index')->with('error', 'No existe contrato para este difunto.');
+        }
+
+        $pdf = Pdf::loadView('pdf.contrato_difunto', [
+            'difunto' => $difunto,
+            'contrato' => $contrato,
+            'usuario' => $usuario
+        ])->setPaper('letter');
+
+        $nombrePDF = 'Contrato_' . $difunto->persona->nombre . '_' . $difunto->persona->apellido . '.pdf';
+
+        return $pdf->download($nombrePDF);
+    }
+
 }
