@@ -51,10 +51,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
+            // nombre and apellido: only letters and spaces (Unicode-aware)
+            'nombre' => ['required','string','max:100','regex:/^[\p{L} ]+$/u'],
+            'apellido' => ['required','string','max:100','regex:/^[\p{L} ]+$/u'],
             'ci' => 'required|string|max:20|unique:persona,ci',
-            'telefono' => 'nullable|string|max:15',
+            // telefono: optional, digits only, between 7 and 15 digits
+            'telefono' => 'nullable|digits_between:7,15',
             'direccion' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:persona,email|unique:users,email',
             'name' => 'required|string|max:255|unique:users,name',

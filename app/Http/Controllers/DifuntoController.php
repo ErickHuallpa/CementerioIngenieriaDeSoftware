@@ -33,16 +33,21 @@ class DifuntoController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
+            // if provided, CI must be unique in persona table
+            'ci' => 'nullable|string|max:20|unique:persona,ci',
             'fecha_fallecimiento' => 'required|date',
             'id_doliente' => 'required|exists:persona,id_persona',
             'id_nicho' => 'required|exists:nicho,id_nicho',
             'id_trabajador' => 'required|exists:persona,id_persona',
+        ], [
+            'ci.unique' => 'La C.I. ingresada ya existe en el sistema. Si es necesario, edite la persona existente o use otra C.I.',
         ]);
 
         $contrato = null;
         $difunto = null;
 
-        DB::transaction(function () use ($request, &$difunto, &$contrato) {
+        $result = DB::transaction(function () use ($request) {
+            // Create a new Persona (CI uniqueness is validated above, so an insert won't violate constraints)
             $persona = Persona::create([
                 'nombre' => $request->nombre,
                 'apellido' => $request->apellido,
@@ -91,7 +96,15 @@ class DifuntoController extends Controller
                 'hora_programada' => '10:00:00',
                 'estado' => 'pendiente',
             ]);
+
+            return [
+                'difunto' => $difunto,
+                'contrato' => $contrato,
+            ];
         });
+
+        $difunto = $result['difunto'];
+        $contrato = $result['contrato'];
 
         $usuario = Auth::user();
         $difunto->load(['persona', 'doliente', 'nicho.pabellon']);

@@ -49,7 +49,7 @@
 
 <div class="modal fade" id="modalRegistrarDifunto" tabindex="-1" aria-labelledby="modalRegistrarDifuntoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <form action="{{ route('difunto.store') }}" method="POST" class="modal-content">
+        <form id="difuntoForm" action="{{ route('difunto.store') }}" method="POST" class="modal-content">
             @csrf
             <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title"><i class="fas fa-cross me-2"></i> Nuevo Registro de Difunto</h5>
@@ -116,4 +116,124 @@
         </form>
     </div>
 </div>
+<script>
+    (function () {
+        const form = document.getElementById('difuntoForm');
+        if (!form) return;
+
+        // insert an area to show validation errors inside the modal
+        const modalBody = form.querySelector('.modal-body');
+        const errorContainer = document.createElement('div');
+        errorContainer.className = 'alert alert-danger d-none';
+        modalBody.insertBefore(errorContainer, modalBody.firstChild);
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            errorContainer.classList.add('d-none');
+            errorContainer.innerHTML = '';
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            const fd = new FormData(form);
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    credentials: 'same-origin', // include cookies (session) so Auth works
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/pdf, application/json, text/html'
+                    },
+                    body: fd,
+                });
+
+                if (res.status === 422) {
+                    const data = await res.json();
+                    // show validation errors
+                    const errors = data.errors || data;
+                    let html = '<ul class="mb-0">';
+                    for (const key in errors) {
+                        if (Object.prototype.hasOwnProperty.call(errors, key)) {
+                            errors[key].forEach(msg => {
+                                html += `<li>${msg}</li>`;
+                            });
+                        }
+                    }
+                    html += '</ul>';
+                    errorContainer.innerHTML = html;
+                    errorContainer.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                if (!res.ok) {
+                    // try to extract error body
+                    let txt = await res.text();
+                    throw new Error('Error en la solicitud: ' + res.status + '\n' + txt);
+                }
+
+                // determine if the response is a PDF (be permissive)
+                const contentType = (res.headers.get('content-type') || '').toLowerCase();
+                const contentDisp = (res.headers.get('content-disposition') || '').toLowerCase();
+                const looksLikePdf = contentType.includes('pdf') || contentType.includes('octet-stream') || contentDisp.includes('.pdf') || contentDisp.includes('filename');
+                if (!looksLikePdf) {
+                    const text = await res.text();
+                    // show as error
+                    errorContainer.innerHTML = '<pre class="mb-0">' + escapeHtml(text) + '</pre>';
+                    errorContainer.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                const blob = await res.blob();
+                // get filename from content-disposition header if present
+                let filename = 'Contrato_Difunto.pdf';
+                const cd = res.headers.get('content-disposition');
+                if (cd) {
+                    const match = cd.match(/filename\*=UTF-8''([^;\n]+)/) || cd.match(/filename="?([^";]+)"?/);
+                    if (match) filename = decodeURIComponent(match[1]);
+                }
+
+                // hide modal
+                const modalEl = document.getElementById('modalRegistrarDifunto');
+                try {
+                    const bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    bsModal.hide();
+                } catch (err) {
+                    // ignore
+                }
+
+                // trigger download
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+
+                // optionally clear the form fields
+                form.reset();
+                submitBtn.disabled = false;
+            } catch (err) {
+                console.error(err);
+                const msg = (err && err.message) ? err.message : 'Ocurrió un error al procesar la solicitud.';
+                errorContainer.innerHTML = '<pre class="mb-0">' + escapeHtml(msg) + '</pre>';
+                errorContainer.classList.remove('d-none');
+                submitBtn.disabled = false;
+            }
+        });
+    })();
+
+    function escapeHtml(unsafe) {
+        return unsafe
+             .replace(/&/g, '&amp;')
+             .replace(/</g, '&lt;')
+             .replace(/>/g, '&gt;')
+             .replace(/"/g, '&quot;')
+             .replace(/'/g, '&#039;');
+    }
+</script>
 @endsection
