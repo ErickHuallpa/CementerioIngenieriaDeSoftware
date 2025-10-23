@@ -22,7 +22,6 @@ class DifuntoController extends Controller
 
     public function create()
     {
-        // Recuperar difuntos sin nicho
         $difuntosSinNicho = Difunto::with('persona', 'doliente', 'programacionesEntierro')
             ->whereNull('id_nicho')
             ->where('estado', 'registrado')
@@ -36,7 +35,7 @@ class DifuntoController extends Controller
             ->whereRaw('LOWER(estado) = ?', ['disponible'])
             ->get();
 
-        $trabajadores = Persona::where('id_tipo_persona', 2)->get();
+        $trabajadores = Persona::where('id_tipo_persona', 6)->get();
 
         return view('difunto.register_edit', compact(
             'difuntosSinNicho', 'dolientes', 'nichosDisponibles', 'trabajadores'
@@ -53,17 +52,12 @@ class DifuntoController extends Controller
         DB::transaction(function () use ($request) {
 
             if ($request->filled('id_difunto_existente')) {
-                // Recuperar difunto existente
                 $difunto = Difunto::with('persona')->findOrFail($request->id_difunto_existente);
-
-                // Actualizar solo nicho y estado
                 $difunto->update([
                     'id_nicho' => $request->id_nicho,
                     'fecha_entierro' => date('Y-m-d', strtotime('+1 day')),
                     'estado' => 'en_nicho',
                 ]);
-
-                // Crear programación de entierro
                 ProgramacionEntierro::create([
                     'id_difunto' => $difunto->id_difunto,
                     'id_trabajador' => $request->id_trabajador,
@@ -73,7 +67,6 @@ class DifuntoController extends Controller
                 ]);
 
             } else {
-                // Registrar nuevo difunto y persona
                 $request->validate([
                     'nombre' => 'required|string|max:100',
                     'apellido' => 'required|string|max:100',
@@ -109,8 +102,6 @@ class DifuntoController extends Controller
                     'estado' => 'pendiente',
                 ]);
             }
-
-            // Actualizar nicho
             $fechaEntierro = $difunto->fecha_entierro;
             $fechaFin = date('Y-m-d', strtotime($fechaEntierro . ' +5 years'));
 
@@ -120,8 +111,6 @@ class DifuntoController extends Controller
                 'fecha_ocupacion' => now(),
                 'fecha_vencimiento' => $fechaFin,
             ]);
-
-            // Crear contrato
             ContratoAlquiler::create([
                 'id_difunto' => $difunto->id_difunto,
                 'id_nicho' => $nicho->id_nicho,

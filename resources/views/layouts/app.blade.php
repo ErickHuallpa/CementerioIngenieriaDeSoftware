@@ -97,7 +97,7 @@
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-gauge-high me-2"></i> Panel Principal</a></li>
                         <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
-                        <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Fallecido</a></li>
+                        <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Difunto</a></li>
                         <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-cross me-2"></i> Programación Entierros</a></li>
                         <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos</a></li>
                         <li><a href="{{ route('bodega.index') }}" class="nav-link"><i class="fas fa-warehouse me-2"></i> Bodega</a></li>
