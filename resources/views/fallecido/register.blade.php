@@ -11,19 +11,26 @@
                 @csrf
                 @if(isset($difunto)) @method('PUT') @endif
 
+                <div class="mb-3">
+                    <label class="form-label">Buscar Persona Existente por CI</label>
+                    <input type="text" id="buscarPersona" class="form-control" placeholder="Ingrese CI">
+                    <input type="hidden" name="id_persona_existente" id="id_persona_existente">
+                </div>
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre</label>
-                        <input type="text" name="nombre" class="form-control" value="{{ $difunto->persona->nombre ?? old('nombre') }}" required>
+                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{ $difunto->persona->nombre ?? old('nombre') }}" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Apellido</label>
-                        <input type="text" name="apellido" class="form-control" value="{{ $difunto->persona->apellido ?? old('apellido') }}" required>
+                        <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $difunto->persona->apellido ?? old('apellido') }}" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">CI (Opcional)</label>
-                        <input type="text" name="ci" class="form-control" value="{{ $difunto->persona->ci ?? old('ci') }}">
+                        <label class="form-label">CI</label>
+                        <input type="text" name="ci" id="ci" class="form-control" value="{{ $difunto->persona->ci ?? old('ci') }}">
                     </div>
+
                     <div class="col-md-6">
                         <label class="form-label">Doliente</label>
                         <select name="id_doliente" class="form-select" required>
@@ -50,4 +57,27 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('buscarPersona');
+    const idInput = document.getElementById('id_persona_existente');
+
+    input.addEventListener('blur', function() {
+        const ci = this.value.trim();
+        if (!ci) return;
+
+        fetch("{{ route('personas.buscar') }}?query=" + encodeURIComponent(ci))
+            .then(res => res.json())
+            .then(data => {
+                if(data.length === 0) return;
+                const persona = data[0];
+                idInput.value = persona.id_persona;
+                document.getElementById('nombre').value = persona.nombre;
+                document.getElementById('apellido').value = persona.apellido;
+                document.getElementById('ci').value = persona.ci ?? '';
+            });
+    });
+});
+</script>
 @endsection

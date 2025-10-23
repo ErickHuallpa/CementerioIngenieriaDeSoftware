@@ -11,15 +11,16 @@ class HomeController extends Controller
     public function index()
     {
         $hoy = Carbon::now();
-        $unaSemana = $hoy->copy()->addDays(7);
+        $unMes = $hoy->copy()->addMonth();
         $totalNichos = Nicho::count();
         $nichosOcupados = Nicho::where('estado', 'ocupado')->count();
         $nichosDisponibles = Nicho::where('estado', 'disponible')->count();
-        $nichosPorVencer = Nicho::whereNotNull('fecha_vencimiento')
-            ->where('estado', '!=', 'vencido')
-            ->whereBetween('fecha_vencimiento', [$hoy, $unaSemana])
+        $nichosPorVencer = Nicho::where('estado', 'ocupado')
+            ->whereNotNull('fecha_vencimiento')
+            ->whereBetween('fecha_vencimiento', [$hoy, $unMes])
             ->count();
-        $nichosVencidos = Nicho::whereNotNull('fecha_vencimiento')
+        $nichosVencidos = Nicho::where('estado', 'ocupado')
+            ->whereNotNull('fecha_vencimiento')
             ->where('fecha_vencimiento', '<', $hoy)
             ->count();
         $listaNichos = Nicho::with('pabellon')

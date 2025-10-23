@@ -34,6 +34,9 @@ class NichoController extends Controller
     public function mapa()
     {
         $pabellones = Pabellon::with(['nichos.difuntos.persona'])->get();
-        return view('nicho.index', compact('pabellones'));
+        $hoy = now();
+        $unMes = $hoy->copy()->addMonth();  
+        return view('nicho.index', compact('pabellones', 'hoy', 'unMes'));
     }
+
 }

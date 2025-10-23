@@ -1,19 +1,31 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // Agrega el nuevo valor 'registrado' al enum de PostgreSQL
-        DB::statement("ALTER TYPE enum_difunto_estado ADD VALUE IF NOT EXISTS 'registrado'");
+        Schema::create('difunto', function (Blueprint $table) {
+            $table->id('id_difunto');
+            $table->unsignedBigInteger('id_persona');
+            $table->foreign('id_persona')->references('id_persona')->on('persona')->onDelete('cascade');
+            $table->unsignedBigInteger('id_doliente')->nullable();
+            $table->foreign('id_doliente')->references('id_persona')->on('persona')->onDelete('set null');
+            $table->unsignedBigInteger('id_nicho')->nullable();
+            $table->foreign('id_nicho')->references('id_nicho')->on('nicho')->onDelete('set null');
+            $table->date('fecha_fallecimiento');
+            $table->date('fecha_entierro')->nullable();
+            $table->enum('estado', ['en_nicho', 'en_bodega', 'incinerado', 'osario'])->default('en_nicho');
+
+            $table->timestamps();
+        });
     }
 
     public function down(): void
     {
-        // PostgreSQL no permite eliminar un valor de enum de manera sencilla
-        // En caso de rollback, se podría crear un tipo nuevo y migrar datos, pero lo dejamos así
+        Schema::dropIfExists('difunto');
     }
 };

@@ -18,7 +18,6 @@
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>#</th>
                         <th>Nombre Difunto</th>
                         <th>Doliente</th>
                         <th>Fecha Fallecimiento</th>
@@ -29,7 +28,6 @@
                 <tbody>
                     @forelse($difuntos as $difunto)
                         <tr>
-                            <td>{{ $difunto->id_difunto }}</td>
                             <td>{{ $difunto->persona->nombre }} {{ $difunto->persona->apellido }}</td>
                             <td>{{ optional($difunto->doliente)->nombre }} {{ optional($difunto->doliente)->apellido }}</td>
                             <td>{{ $difunto->fecha_fallecimiento ?? '—' }}</td>

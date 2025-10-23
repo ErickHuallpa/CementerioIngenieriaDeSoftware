@@ -18,14 +18,15 @@
                             <div class="d-flex justify-content-center gap-3 flex-wrap">
                                 @foreach(['A','B','C','D','E','F'] as $col)
                                     @php
-                                        $nicho = $pabellon->nichos->first(function($n) use($fila, $col) {
-                                            return strtoupper($n->columna) === $col && $n->fila == $fila;
-                                        });
-                                        $difunto = $nicho?->difuntos?->last(); // último difunto registrado, si existe
+                                        $nicho = $pabellon->nichos->first(fn($n) => strtoupper($n->columna) === $col && $n->fila == $fila);
+                                        $difunto = $nicho?->difuntos?->last();
                                         $persona = $difunto?->persona;
+
+                                        $porVencer = $nicho && $nicho->fecha_vencimiento
+                                            && \Carbon\Carbon::parse($nicho->fecha_vencimiento)->between($hoy, $unMes);
                                     @endphp
 
-                                    <div class="card text-center shadow-sm"
+                                    <div class="card text-center shadow-sm position-relative"
                                          style="width: 120px; height: 160px; border-radius: 10px;
                                                 background: {{ $nicho ? match($nicho->estado) {
                                                     'disponible' => '#d4edda',
@@ -34,7 +35,7 @@
                                                     'vencido' => '#d6d8d9',
                                                     default => '#f0f0f0'
                                                 } : '#f0f0f0' }};
-                                                border: 2px solid #ccc; position: relative;">
+                                                border: 2px solid #ccc;">
                                         <div style="font-size: 0.8rem; font-weight: bold; margin-top: 5px;">
                                             {{ $col }}{{ $fila }}
                                         </div>
@@ -57,6 +58,13 @@
                                         @else
                                             <div class="p-2">
                                                 <div class="text-muted small">Sin registro</div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Icono de advertencia por vencer --}}
+                                        @if($porVencer)
+                                            <div style="position:absolute; top:5px; right:5px; color:#856404;">
+                                                <i class="fas fa-exclamation-triangle" title="Por vencer en un mes"></i>
                                             </div>
                                         @endif
 

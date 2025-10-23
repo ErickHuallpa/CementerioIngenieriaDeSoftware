@@ -18,7 +18,6 @@
             <table class="table table-striped align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>#</th>
                         <th>Nombre Completo</th>
                         <th>CI</th>
                         <th>Teléfono</th>
@@ -30,7 +29,6 @@
                 <tbody>
                     @forelse($clientes as $cliente)
                         <tr>
-                            <td>{{ $cliente->id_persona }}</td>
                             <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
                             <td>{{ $cliente->ci }}</td>
                             <td>{{ $cliente->telefono ?? '—' }}</td>

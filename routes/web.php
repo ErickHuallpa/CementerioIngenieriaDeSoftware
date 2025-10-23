@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\IncineracionController;
 use App\Http\Controllers\FallecidoController;
 use App\Http\Controllers\PendienteController;
+use App\Http\Controllers\BodegaController;
 
 
 Route::get('/', function () {
@@ -48,10 +49,14 @@ Route::get('/fallecidos/create', [FallecidoController::class, 'create'])->name('
 Route::post('/fallecidos', [FallecidoController::class, 'store'])->name('fallecido.store');
 Route::get('/fallecidos/{id}/edit', [FallecidoController::class, 'edit'])->name('fallecido.edit');
 Route::put('/fallecidos/{id}', [FallecidoController::class, 'update'])->name('fallecido.update');
+Route::get('/personas/buscar', [FallecidoController::class, 'buscarPersona'])->name('personas.buscar');
 Route::get('/pendientes', [PendienteController::class, 'index'])->name('pendientes.index');
 Route::post('/pendientes/{id}/complete', [PendienteController::class, 'complete'])->name('pendientes.complete');
 Route::get('/pendientes/{id}/ticket', [PendienteController::class, 'verComprobante'])->name('pendientes.ticket');
 Route::get('/pendientes/{id}/factura', [PendienteController::class, 'downloadFactura'])->name('pendientes.factura');
+Route::get('/bodega', [BodegaController::class, 'index'])->name('bodega.index');
+Route::get('/bodega/create', [BodegaController::class, 'create'])->name('bodega.create');
+Route::post('/bodega', [BodegaController::class, 'store'])->name('bodega.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');

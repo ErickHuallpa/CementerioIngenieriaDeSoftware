@@ -20,7 +20,6 @@
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>#</th>
                         <th>Difunto</th>
                         <th>Responsable</th>
                         <th>Tipo</th>
@@ -33,7 +32,6 @@
                 <tbody>
                     @forelse($incineraciones as $inc)
                         <tr>
-                            <td>{{ $inc->id_incineracion }}</td>
                             <td>{{ $inc->difunto->persona->nombre_completo ?? ($inc->difunto->persona->nombre ?? '—') }}</td>
                             <td>{{ $inc->responsable->nombre_completo ?? '—' }}</td>
                             <td>{{ ucfirst($inc->tipo) }}</td>

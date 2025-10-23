@@ -95,18 +95,20 @@
                     </div>
 
                     <ul class="nav nav-pills flex-column mb-auto">
-                        <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-tachometer-alt"></i> Panel Principal</a></li>
-                        <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-tasks"></i> Pendientes</a></li>
-                        <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical"></i> Registro Fallecido</a></li>
+                        <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-gauge-high me-2"></i> Panel Principal</a></li>
+                        <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
+                        <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Fallecido</a></li>
+                        <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-cross me-2"></i> Programación Entierros</a></li>
+                        <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos</a></li>
+                        <li><a href="{{ route('bodega.index') }}" class="nav-link"><i class="fas fa-warehouse me-2"></i> Bodega</a></li>
+                        <li><a href="{{ route('incineracion.index') }}" class="nav-link"><i class="fas fa-fire me-2"></i> Incineraciones</a></li>
+                        <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users me-2"></i> Dolientes</a></li>
                         @if(auth()->user() && auth()->user()->persona && auth()->user()->persona->tipoPersona->nombre_tipo === 'Administrador')
-                        <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-tie"></i> Personal</a></li>
+                            <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-gear me-2"></i> Personal</a></li>
+                            <li><a href="#" class="nav-link"><i class="fas fa-chart-pie me-2"></i> Reportes</a></li>
                         @endif
-                        <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-marked-alt"></i> Mapa de Nichos</a></li>
-                        <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-book"></i> Programacion Entierros</a></li>
-                        <li><a href="{{ route('incineracion.index') }}" class="nav-link"><i class="fas fa-fire"></i> Incineraciones</a></li>
-                        <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users"></i> Dolientes</a></li>
-                        <li><a href="#" class="nav-link"><i class="fas fa-chart-bar"></i> Reportes</a></li>
                     </ul>
+
 
                     <div class="mt-auto pt-3 border-top border-light">
                         <div class="d-flex align-items-center">
