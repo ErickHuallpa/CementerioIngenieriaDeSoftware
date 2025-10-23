@@ -12,10 +12,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $personas = Persona::whereIn('id_tipo_persona', [1, 2, 4])
+        $personas = Persona::whereIn('id_tipo_persona', [1, 2, 4, 6, 7])
             ->with(['tipoPersona', 'user'])
             ->get();
-        $tipos = TipoPersona::whereIn('id_tipo_persona', [1, 2, 4])->get();
+        $tipos = TipoPersona::whereIn('id_tipo_persona', [1, 2, 4, 6, 7])->get();
 
         return view('users.index', compact('personas', 'tipos'));
     }
@@ -30,7 +30,7 @@ class UserController extends Controller
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:255',
             'email' => 'required|email|unique:persona,email|unique:users,email',
-            'id_tipo_persona' => 'required|integer|in:1,2,4',
+            'id_tipo_persona' => 'required|integer|in:1,2,4,6,7',
             'password' => 'required|string|min:6|confirmed',
         ]);
 

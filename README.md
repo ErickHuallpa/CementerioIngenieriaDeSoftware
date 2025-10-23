@@ -77,6 +77,8 @@ Asegúrate de tener instalados:
    ('Doliente', 'Familiar o responsable del difunto'),
    ('Responsable de Incineración', 'Persona a cargo del proceso de incineración'),
    ('Visitante', 'Persona que visita el cementerio o consulta información');
+   ('Responsable de Entierro', 'Persona encargada de supervisar o ejecutar entierros'),
+    ('Responsable de Bodega', 'Persona responsable del manejo y control de la bodega');
    ```
 
 9. **Generar la clave de la aplicación**
@@ -90,14 +92,6 @@ Asegúrate de tener instalados:
     ```bash
     php artisan serve
     ```
-
----
-
-## 🧠 Notas importantes
-
-- El proyecto usa el branch principal **`master`**, asegúrate de mantenerte en él.  
-- Al registrar difuntos, los entierros se programan automáticamente y se gestionan los contratos de alquiler.  
-- Usa `npm run dev` para compilar los recursos front-end.
 
 ---
 
