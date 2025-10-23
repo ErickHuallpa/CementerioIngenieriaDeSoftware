@@ -52,7 +52,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register.post') }}">
+    <form method="POST" action="{{ route('register.post') }}" id="registroForm">
         @csrf
 
         <h5 class="text-primary mb-3">Datos personales</h5>
@@ -60,11 +60,15 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Nombre</label>
-                <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
+                <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}"
+                       required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                       title="Solo letras y espacios">
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">Apellido</label>
-                <input type="text" name="apellido" class="form-control" value="{{ old('apellido') }}" required>
+                <input type="text" name="apellido" class="form-control" value="{{ old('apellido') }}"
+                       required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                       title="Solo letras y espacios">
             </div>
         </div>
 
@@ -75,7 +79,8 @@
             </div>
             <div class="col-md-4 mb-3">
                 <label class="form-label">Teléfono</label>
-                <input type="text" name="telefono" class="form-control" value="{{ old('telefono') }}">
+                <input type="text" name="telefono" class="form-control" value="{{ old('telefono') }}"
+                       pattern="[0-9]+" title="Solo números" maxlength="10">
             </div>
             <div class="col-md-4 mb-3">
                 <label class="form-label">Tipo de Persona</label>
@@ -125,5 +130,20 @@
         </button>
     </form>
 </div>
+
+<script>
+    // Evita caracteres inválidos mientras se escribe
+    document.querySelector('input[name="nombre"]').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+    });
+
+    document.querySelector('input[name="apellido"]').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+    });
+
+    document.querySelector('input[name="telefono"]').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+</script>
 </body>
 </html>

@@ -71,22 +71,32 @@
             justify-content: center;
         }
 
+        /* === Logo y título centrado === */
         .logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
+            text-align: center;
             position: relative;
             z-index: 2;
+            margin-bottom: 30px;
         }
 
-        .logo-icon {
-            font-size: 2.5rem;
-            margin-right: 15px;
+        .logo-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+            animation: zoomIn 0.8s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .logo-text {
             font-size: 1.8rem;
             font-weight: 700;
+            color: white;
         }
 
         .welcome-text {
@@ -95,6 +105,7 @@
             margin-bottom: 15px;
             position: relative;
             z-index: 2;
+            text-align: center;
         }
 
         .subtitle {
@@ -103,6 +114,7 @@
             margin-bottom: 30px;
             position: relative;
             z-index: 2;
+            text-align: center;
         }
 
         .features-list {
@@ -232,42 +244,6 @@
             text-decoration: underline;
         }
 
-        .demo-accounts {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .demo-title {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .demo-account {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .demo-account:hover {
-            background-color: #e9ecef;
-        }
-
-        .demo-account:last-child {
-            margin-bottom: 0;
-        }
-
-        .demo-account i {
-            margin-right: 8px;
-            color: var(--accent-color);
-        }
-
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
@@ -285,11 +261,11 @@
 </head>
 <body>
     <div class="login-container">
-        <!-- Left Panel with Information -->
+        <!-- Panel Izquierdo -->
         <div class="login-left">
-            <div class="logo">
-                <i class="fas fa-monument logo-icon"></i>
-                <div class="logo-text">Sistema Cementerio</div>
+            <div class="logo text-center">
+                <img src="img/logo1.png" alt="Logo del Cementerio" class="logo-img mb-3">
+                <h2 class="logo-text">Sistema Cementerio</h2>
             </div>
 
             <h2 class="welcome-text">Bienvenido de nuevo</h2>
@@ -300,10 +276,9 @@
                     <i class="fas fa-shield-alt"></i>
                     <span>Sistema seguro y confiable</span>
                 </li>
-
             </ul>
 
-            <div class="mt-4" style="position: relative; z-index: 2;">
+            <div class="mt-4 text-center" style="position: relative; z-index: 2;">
                 <p>¿Primera vez en el sistema?</p>
                 <a href="{{ route('register.form') }}" class="btn btn-outline-light">
                     <i class="fas fa-user-plus me-2"></i> Crear Cuenta
@@ -311,7 +286,7 @@
             </div>
         </div>
 
-        <!-- Right Panel with Login Form -->
+        <!-- Panel Derecho -->
         <div class="login-right">
             <h3 class="form-title">Iniciar Sesión</h3>
             <p class="form-subtitle">Ingresa tus credenciales para acceder al sistema</p>
@@ -361,16 +336,6 @@
                 </button>
             </form>
 
-            <div class="demo-accounts">
-                <div class="demo-title">Cuentas de demostración (solo desarrollo)</div>
-                <div class="demo-account" onclick="fillDemo('admin', 'password123')">
-                    <i class="fas fa-user-shield"></i> Administrador: admin / password123
-                </div>
-                <div class="demo-account" onclick="fillDemo('usuario', 'password123')">
-                    <i class="fas fa-user"></i> Usuario: usuario / password123
-                </div>
-            </div>
-
             <div class="text-center mt-4">
                 <small>¿No tienes cuenta? <a href="{{ route('register.form') }}" class="register-link">Regístrate aquí</a></small>
             </div>
@@ -379,7 +344,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Password visibility toggle
             const togglePassword = document.querySelector('.toggle-password');
             const passwordInput = document.getElementById('password');
 
@@ -389,66 +353,7 @@
                 this.querySelector('i').classList.toggle('fa-eye');
                 this.querySelector('i').classList.toggle('fa-eye-slash');
             });
-
-            // Form validation animation
-            const loginForm = document.getElementById('loginForm');
-
-            loginForm.addEventListener('submit', function(e) {
-                const username = document.getElementById('name').value;
-                const password = document.getElementById('password').value;
-
-                if (!username || !password) {
-                    e.preventDefault();
-                    // Add shake animation to empty fields
-                    if (!username) {
-                        document.getElementById('name').classList.add('is-invalid');
-                        setTimeout(() => {
-                            document.getElementById('name').classList.remove('is-invalid');
-                        }, 1000);
-                    }
-                    if (!password) {
-                        document.getElementById('password').classList.add('is-invalid');
-                        setTimeout(() => {
-                            document.getElementById('password').classList.remove('is-invalid');
-                        }, 1000);
-                    }
-                }
-            });
-
-            // Remove invalid class when user starts typing
-            document.getElementById('name').addEventListener('input', function() {
-                this.classList.remove('is-invalid');
-            });
-
-            document.getElementById('password').addEventListener('input', function() {
-                this.classList.remove('is-invalid');
-            });
         });
-
-        // Function to fill demo accounts (for development only)
-        function fillDemo(username, password) {
-            document.getElementById('name').value = username;
-            document.getElementById('password').value = password;
-
-            // Show confirmation message
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-info alert-custom mt-3';
-            alertDiv.innerHTML = `<i class="fas fa-info-circle me-2"></i> Credenciales de demostración cargadas. Haz clic en "Ingresar al Sistema".`;
-
-            const existingAlert = document.querySelector('.alert-info');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-
-            document.querySelector('form').prepend(alertDiv);
-
-            // Auto-remove the message after 5 seconds
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 5000);
-        }
     </script>
 </body>
 </html>
