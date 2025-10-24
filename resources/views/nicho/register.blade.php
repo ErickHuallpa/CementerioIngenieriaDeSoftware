@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Nicho</title>
+    <link rel="icon" href="{{ asset('img/logo.ico') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -62,17 +63,7 @@
                     <label for="costo_alquiler" class="form-label">Costo de Alquiler (Bs.)</label>
                     <input type="number" id="costo_alquiler" name="costo_alquiler" class="form-control" min="0" step="0.01" required>
                 </div>
-
-                <div class="mb-3">
-                    <label for="estado" class="form-label">Estado</label>
-                    <select id="estado" name="estado" class="form-select" required>
-                        <option value="">Seleccione un estado</option>
-                        <option value="disponible">Disponible</option>
-                        <option value="ocupado">Ocupado</option>
-                        <option value="por_vencer">Por Vencer</option>
-                        <option value="vencido">Vencido</option>
-                    </select>
-                </div>
+                <input type="hidden" name="estado" value="disponible">
 
                 <div class="row">
                     <div class="col-md-6 mb-3">

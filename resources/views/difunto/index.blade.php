@@ -3,9 +3,9 @@
 @section('content')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-book me-2"></i> Registro de Difuntos</h2>
+        <h2><i class="fas fa-book me-2"></i> Programación de entierros</h2>
         <a href="{{ route('difunto.create') }}" class="btn btn-success">
-            <i class="fas fa-plus-circle me-1"></i> Nuevo Registro
+            <i class="fas fa-plus-circle me-1"></i> Nueva Programación
         </a>
     </div>
 
@@ -54,13 +54,6 @@
                                 <a href="{{ route('difunto.downloadPdf', $difunto->id_difunto) }}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
-
-                                {{-- SI NO ESTÁ INCINERADO SE MUESTRA EDITAR --}}
-                                @if($difunto->estado !== 'incinerado')
-                                    <a href="{{ route('difunto.edit', $difunto->id_difunto) }}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                @endif
                             </td>
                         </tr>
                     @empty
