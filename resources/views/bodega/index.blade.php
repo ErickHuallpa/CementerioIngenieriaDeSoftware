@@ -30,6 +30,7 @@
                             <th>Fecha Salida</th>
                             <th>Destino (origen)</th>
                             <th>Estado Difunto</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,6 +42,23 @@
                                 <td>{{ $b->fecha_salida ?? '—' }}</td>
                                 <td>{{ ucfirst($b->destino ?? '—') }}</td>
                                 <td>{{ ucfirst(str_replace('_', ' ', $b->difunto->estado ?? '—')) }}</td>
+                                <td>
+                                    @if($b->difunto->estado === 'en_bodega')
+                                        <form action="{{ route('bodega.retirar', $b->id_bodega) }}" method="POST" onsubmit="return confirm('¿Está seguro de retirar al difunto?');">
+                                            @csrf
+                                            <button class="btn btn-danger btn-sm">
+                                                <i class="fas fa-door-open"></i> Retirar
+                                            </button>
+                                        </form>
+                                    @elseif($b->difunto->estado === 'retirado')
+                                        <a href="{{ route('bodega.comprobante', $b->id_bodega) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-file-alt"></i> Comprobante
+                                        </a>
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+
                             </tr>
                         @endforeach
                     </tbody>

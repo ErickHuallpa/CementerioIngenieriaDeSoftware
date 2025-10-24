@@ -57,6 +57,12 @@ Route::get('/pendientes/{id}/factura', [PendienteController::class, 'downloadFac
 Route::get('/bodega', [BodegaController::class, 'index'])->name('bodega.index');
 Route::get('/bodega/create', [BodegaController::class, 'create'])->name('bodega.create');
 Route::post('/bodega', [BodegaController::class, 'store'])->name('bodega.store');
+Route::post('/bodega/{id}/retirar', [App\Http\Controllers\BodegaController::class, 'retirar'])->name('bodega.retirar');
+Route::get('/bodega/{id}/comprobante', [App\Http\Controllers\BodegaController::class, 'comprobante'])
+    ->name('bodega.comprobante');
+Route::get('/bodega/{id}/comprobante/pdf', [App\Http\Controllers\BodegaController::class, 'comprobantePDF'])
+    ->name('bodega.comprobante.pdf');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');

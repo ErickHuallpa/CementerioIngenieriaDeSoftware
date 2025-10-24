@@ -51,12 +51,18 @@
     </div>
 
     <div class="d-flex gap-2">
-        <a href="{{ route('pabellon.create') }}" class="btn btn-primary-custom">
-            <i class="fas fa-plus-circle me-1"></i> Registrar Pabellón
-        </a>
-        <a href="{{ route('nicho.create') }}" class="btn btn-success">
-            <i class="fas fa-layer-group me-1"></i> Registrar Nicho
-        </a>
+        @php
+            $tipo = auth()->user()->persona->tipoPersona->nombre_tipo ?? null;
+        @endphp
+
+        @if($tipo === 'Administrador')
+            <a href="{{ route('pabellon.create') }}" class="btn btn-primary-custom">
+                <i class="fas fa-plus-circle me-1"></i> Registrar Pabellón
+            </a>
+            <a href="{{ route('nicho.create') }}" class="btn btn-success">
+                <i class="fas fa-layer-group me-1"></i> Registrar Nicho
+            </a>
+        @endif
     </div>
 </div>
 

@@ -8,6 +8,7 @@ use App\Models\Bodega;
 use App\Models\Difunto;
 use App\Models\ContratoAlquiler;
 use App\Models\Nicho;
+use PDF;
 
 class BodegaController extends Controller
 {
@@ -29,16 +30,6 @@ class BodegaController extends Controller
         return view('bodega.register', compact('difuntosElegibles'));
     }
 
-    /**
-     * Registrar traslado a bodega.
-     *
-     * Reglas:
-     *  - Solo si difunto.estado es 'registrado', 'en_nicho' o 'osario'
-     *  - Si tenia nicho -> liberar nicho (estado = disponible, limpiar fechas)
-     *  - Si tenia contrato activo -> marcar contrato.estado = 'vencido'
-     *  - Crear registro en bodega con fecha_ingreso now() y fecha_salida now()->addMonth()
-     *  - Actualizar difunto:id_nicho = null y estado = 'en_bodega'
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -83,4 +74,46 @@ class BodegaController extends Controller
 
         return redirect()->route('bodega.index')->with('success', 'Traslado a bodega realizado correctamente.');
     }
+
+    public function retirar($id)
+    {
+        $bodega = Bodega::with('difunto')->findOrFail($id);
+        $difunto = $bodega->difunto;
+
+        if ($difunto->estado !== 'en_bodega') {
+            return redirect()->route('bodega.index')->with('error', 'Solo se pueden retirar difuntos que estén en bodega.');
+        }
+
+        DB::transaction(function () use ($bodega, $difunto) {
+            $bodega->update([
+                'fecha_salida' => now()->toDateString()
+            ]);
+
+            $difunto->update([
+                'estado' => 'retirado'
+            ]);
+        });
+
+        return redirect()->route('bodega.index')->with('success', 'El difunto fue retirado correctamente.');
+    }
+
+    public function comprobante($id)
+    {
+        $bodega = Bodega::with(['difunto.persona', 'difunto.doliente'])->findOrFail($id);
+        $responsable = auth()->user();
+
+        return view('bodega.comprobante', compact('bodega', 'responsable'));
+    }
+
+    public function comprobantePdf($id)
+    {
+        $bodega = Bodega::with(['difunto.persona', 'difunto.doliente'])->findOrFail($id);
+        $responsable = auth()->user();
+
+        $pdf = \PDF::loadView('pdf.comprobante_retiro', compact('bodega', 'responsable'))
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->download('comprobante_retiro_'.$bodega->id_bodega.'.pdf');
+    }
+
 }
