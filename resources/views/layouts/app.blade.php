@@ -85,12 +85,11 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar p-0">
                 <div class="d-flex flex-column p-3">
                     <div class="text-center mb-4 mt-2">
                         <img src="{{ asset('img/logo1.png') }}" alt="Logo Cementerio" class="logo mb-2">
-                        <h4><i class="fas fa-monument me-2"></i>Sistema Cementerio</h4>
+                        <h4><i class="fas fa-monument me-2"></i>Cementerio General de Potosí</h4>
                         <hr class="bg-light">
                     </div>
 
@@ -103,38 +102,33 @@
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro','Responsable de Bodega','Responsable de Incineración']))
                             <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-gauge-high me-2"></i> Panel Principal</a></li>
                         @endif
-
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
-                            <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
+                            <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos/Osarios</a></li>
+                        @endif
+                        @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
                             <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-cross me-2"></i> Programación Entierros</a></li>
                         @endif
-
+                        @if(in_array($tipo, ['Administrador','Responsable de Entierro']))
+                            <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
+                        @endif
                         @if(in_array($tipo, ['Administrador','Empleado']))
                             <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Difunto</a></li>
                         @endif
-
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
-                            <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos/Osarios</a></li>
-
                             <li><a href="{{ route('osario.index') }}" class="nav-link"><i class="fas fa-cube me-2"></i> Osarios</a></li>
-
                         @endif
-
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Bodega']))
                             <li><a href="{{ route('bodega.index') }}" class="nav-link"><i class="fas fa-warehouse me-2"></i> Bodega</a></li>
                         @endif
-
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Incineración']))
                             <li><a href="{{ route('incineracion.index') }}" class="nav-link"><i class="fas fa-fire me-2"></i> Incineraciones</a></li>
                         @endif
-
                         @if(in_array($tipo, ['Administrador','Empleado']))
                             <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users me-2"></i> Dolientes</a></li>
                         @endif
-
                         @if($tipo === 'Administrador')
                             <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-gear me-2"></i> Personal</a></li>
-                            <li><a href="#" class="nav-link"><i class="fas fa-chart-pie me-2"></i> Reportes</a></li>
+                            <li><a href="{{ route('reportes.index') }}" class="nav-link"><i class="fas fa-chart-pie me-2"></i> Reportes</a></li>
                         @endif
 
                     </ul>

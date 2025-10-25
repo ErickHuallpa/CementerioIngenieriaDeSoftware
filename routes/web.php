@@ -16,6 +16,7 @@ use App\Http\Controllers\PendienteController;
 use App\Http\Controllers\BodegaController;
 use App\Http\Controllers\OsarioController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReporteController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -100,4 +101,8 @@ Route::middleware([AdminMiddleware::class, 'auth'])->group(function () {
     Route::post('/nicho', [NichoController::class, 'store'])->name('nicho.store');
     Route::get('/osario/crear', [OsarioController::class, 'create'])->name('osario.create');
     Route::post('/osario', [OsarioController::class, 'store'])->name('osario.store');
+    Route::prefix('reportes')->group(function () {
+        Route::get('/', [ReporteController::class, 'index'])->name('reportes.index');
+        Route::post('/generar', [ReporteController::class, 'generar'])->name('reportes.generar');
+    });
 });

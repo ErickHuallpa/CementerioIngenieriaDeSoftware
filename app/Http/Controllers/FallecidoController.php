@@ -18,16 +18,13 @@ class FallecidoController extends Controller
     public function create()
     {
         $difuntosIds = Difunto::pluck('id_persona')->toArray();
-
-        // Solo personas que aún tienen un tipo definido (ej. dolientes, empleados)
-        $dolientes = Persona::whereHas('tipoPersona', fn($q) => $q->whereNotNull('id_tipo_persona'))
+        $dolientes = Persona::where('id_tipo_persona', 3)
             ->whereNotIn('id_persona', $difuntosIds)
             ->get();
 
         return view('fallecido.register', compact('dolientes'));
     }
 
-    // Buscar persona existente por CI
     public function buscarPersona(Request $request)
     {
         $ci = $request->get('query');
@@ -54,8 +51,6 @@ class FallecidoController extends Controller
         DB::transaction(function() use ($request) {
             if ($request->id_persona_existente) {
                 $persona = Persona::findOrFail($request->id_persona_existente);
-
-                // Marcar como difunto → id_tipo_persona null
                 $persona->update([
                     'ci' => $request->ci ?? $persona->ci,
                     'email' => null,
@@ -93,7 +88,7 @@ class FallecidoController extends Controller
         $difunto = Difunto::with(['persona', 'doliente'])->findOrFail($id);
         $difuntosIds = Difunto::pluck('id_persona')->toArray();
 
-        $dolientes = Persona::whereHas('tipoPersona', fn($q) => $q->whereNotNull('id_tipo_persona'))
+        $dolientes = Persona::where('id_tipo_persona', 3)
             ->whereNotIn('id_persona', $difuntosIds)
             ->get();
 

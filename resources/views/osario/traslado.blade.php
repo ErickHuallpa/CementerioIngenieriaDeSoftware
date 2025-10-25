@@ -1,7 +1,101 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #16a085;
+        --light-color: #ecf0f1;
+    }
+
+    body {
+        background-color: var(--light-color);
+    }
+
+    h3 {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .card-body p {
+        color: var(--secondary-color);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .form-select, .form-control {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(22, 160, 133, 0.25);
+    }
+
+    .input-group .btn-outline-secondary {
+        border-radius: 0 8px 8px 0;
+        border-color: var(--secondary-color);
+        transition: 0.3s;
+    }
+
+    .input-group .btn-outline-secondary:hover {
+        background-color: var(--accent-color);
+        color: #fff;
+        border-color: var(--accent-color);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+        border: none;
+        transition: 0.3s;
+        border-radius: 8px;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    }
+
+    .btn-outline-secondary {
+        border-radius: 8px;
+        border-color: var(--secondary-color);
+        color: var(--secondary-color);
+        transition: 0.3s;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--secondary-color);
+        color: #fff;
+    }
+
+    hr {
+        border-top: 2px dashed var(--secondary-color);
+    }
+
+    ul li {
+        margin-bottom: 5px;
+        color: var(--secondary-color);
+    }
+
+    @media (max-width: 768px) {
+        .input-group .btn-outline-secondary {
+            margin-top: 5px;
+        }
+    }
+</style>
+
+<div class="container py-4">
     <h3 class="mb-4">Traslado a Osario</h3>
 
     @if(session('error'))
@@ -13,8 +107,6 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <p class="text-muted">Seleccione un difunto con contrato de nicho próximo a vencer (1 mes o menos) y un osario disponible.</p>
-
             <form action="{{ route('osario.traslado.store') }}" method="POST">
                 @csrf
 
