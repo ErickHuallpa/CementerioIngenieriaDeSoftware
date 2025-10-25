@@ -81,12 +81,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/pdf', [OsarioController::class, 'downloadPdf'])->name('osario.downloadPdf');
         Route::get('/mapa', [OsarioController::class, 'mapa'])->name('osario.mapa');
     });
-
     Route::get('/nicho/por_vencer', [NichoController::class, 'porVencer'])->name('nicho.por_vencer');
     Route::get('/nicho/mapa', [NichoController::class, 'mapa'])->name('nicho.mapa');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/nicho/{id}/notificar/{difunto_id}', [NichoController::class, 'enviarNotificacionNicho'])->name('nicho.enviarNotificacion');
+    Route::post('/osario/{id}/notificar', [NichoController::class, 'enviarNotificacionOsario'])->name('osario.enviarNotificacion');
+
 });
 
 Route::middleware([AdminMiddleware::class, 'auth'])->group(function () {

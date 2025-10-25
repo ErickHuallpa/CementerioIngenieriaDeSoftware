@@ -18,6 +18,12 @@ class OsarioController extends Controller
         $osarios = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])->whereNotNull('id_difunto')->get();
         return view('osario.index', compact('osarios'));
     }
+    public function create()
+    {
+        $pabellones = Pabellon::where('tipo', 'osario')->get();
+        return view('osario.register', compact('pabellones'));
+    }
+
     public function downloadPdf($id)
     {
         $osario = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])->findOrFail($id);
