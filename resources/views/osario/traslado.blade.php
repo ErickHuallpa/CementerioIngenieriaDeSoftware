@@ -39,16 +39,20 @@
 
                     <div class="col-md-6">
                         <label for="id_osario" class="form-label">Osario disponible</label>
-                        <select name="id_osario" id="id_osario" class="form-select" required>
-                            <option value="">-- Seleccione osario --</option>
-                            @foreach($osariosDisponibles as $osario)
-                                <option value="{{ $osario->id_osario }}">
-                                    Pabellón: {{ $osario->pabellon->nombre ?? $osario->id_pabellon }} —
-                                    Ubicación: {{ $osario->fila }}{{ $osario->columna }} —
-                                    Precio: {{ number_format($osario->costo ?? 0, 2) }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="input-group">
+                            <select name="id_osario" id="id_osario" class="form-select" required>
+                                <option value="">-- Seleccione osario --</option>
+                                @foreach($osariosDisponibles as $osario)
+                                    <option value="{{ $osario->id_osario }}"
+                                        @if(isset($id_osario_preseleccionado) && $id_osario_preseleccionado == $osario->id_osario) selected @endif>
+                                        Pabellón: {{ $osario->pabellon->nombre ?? $osario->id_pabellon }} —
+                                        Ubicación: {{ $osario->fila }}{{ $osario->columna }} —
+                                        Precio: {{ number_format($osario->costo ?? 0, 2) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <a href="{{ route('osario.mapa') }}" class="btn btn-outline-secondary">Elegir Osario</a>
+                        </div>
                         @error('id_osario') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
 
@@ -65,16 +69,16 @@
                         @error('id_trabajador') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
 
-
                     <div class="col-12">
                         <label for="observacion" class="form-label">Observación (opcional)</label>
                         <textarea name="observacion" id="observacion" class="form-control" rows="2" placeholder="Motivo, notas..."></textarea>
                     </div>
 
                     <div class="col-12 text-end">
-                        <a href="{{ route('osario.create') }}" class="btn btn-outline-secondary me-2">Volver</a>
+                        <a href="{{ route('osario.index') }}" class="btn btn-outline-secondary me-2">Volver</a>
                         <button type="submit" class="btn btn-success">Confirmar traslado</button>
                     </div>
+
                 </div>
             </form>
 
@@ -82,7 +86,7 @@
 
             <h6 class="mt-3">Notas</h6>
             <ul>
-                <li>Solo se permiten traslados si el contrato del nicho vence en **1 mes o menos** (o ya venció).</li>
+                <li>Solo se permiten traslados si el contrato del nicho vence en <strong>1 mes o menos</strong> (o ya venció).</li>
                 <li>El contrato actual se marcará como <strong>renovado</strong> y se incrementará el contador de renovaciones (+1). Límite máximo de renovaciones: 2.</li>
                 <li>Se creará un nuevo contrato asociado al osario por <strong>5 años</strong> (fecha_fin = fecha_inicio + 5 años).</li>
             </ul>

@@ -60,4 +60,9 @@ class Difunto extends Model
     {
         return $query->where('estado', 'osario');
     }
+    public function bodega()
+    {
+        return $this->hasOne(Bodega::class, 'id_difunto', 'id_difunto');
+    }
+
 }

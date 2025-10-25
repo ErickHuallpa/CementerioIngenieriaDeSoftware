@@ -116,9 +116,8 @@
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
                             <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos/Osarios</a></li>
 
-                            <li><a href="{{ route('osario.traslado.form') }}" class="nav-link">
-                                <i class="fas fa-arrow-right-to-bracket me-2"></i> Traslado a Osario
-                            </a></li>
+                            <li><a href="{{ route('osario.index') }}" class="nav-link"><i class="fas fa-cube me-2"></i> Osarios</a></li>
+
                         @endif
 
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Bodega']))
@@ -142,7 +141,9 @@
 
                     <div class="mt-auto pt-3 border-top border-light">
                         <div class="d-flex align-items-center">
-                            <div class="user-avatar me-3">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</div>
+                            <a href="{{ route('profile.index') }}" class="text-decoration-none">
+                                <div class="user-avatar me-3">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</div>
+                            </a>
                             <div>
                                 <div class="fw-bold">{{ auth()->user()->name ?? 'Usuario' }}</div>
                                 <small class="text-light">

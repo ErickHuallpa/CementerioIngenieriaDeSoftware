@@ -45,4 +45,23 @@ class NichoController extends Controller
 
         return view('nicho.index', compact('pabellones', 'hoy', 'unMes'));
     }
+
+    public function porVencer()
+    {
+        $hoy = now();
+        $dosSemanas = $hoy->copy()->addWeeks(2);
+        $nichosPorVencer = Nicho::with(['difuntos.persona', 'difuntos.doliente', 'pabellon'])
+            ->where('estado', 'ocupado')
+            ->whereNotNull('fecha_vencimiento')
+            ->whereBetween('fecha_vencimiento', [$hoy, $dosSemanas])
+            ->get();
+        $osariosPorVencer = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])
+            ->where('estado', 'ocupado')
+            ->whereNotNull('fecha_salida')
+            ->whereBetween('fecha_salida', [$hoy, $dosSemanas])
+            ->get();
+
+        return view('nicho.por_vencer', compact('nichosPorVencer', 'osariosPorVencer'));
+    }
+
 }

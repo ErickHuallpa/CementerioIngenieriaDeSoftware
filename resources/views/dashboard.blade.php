@@ -176,16 +176,19 @@
     </div>
 
     <div class="col-md-3">
-        <div class="card card-dashboard p-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="stats-number">{{ $nichosPorVencer }}</div>
-                    <div class="stats-label">Por Vencer</div>
+        <a href="{{ route('nicho.por_vencer') }}" class="text-decoration-none">
+            <div class="card card-dashboard p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stats-number">{{ $nichosPorVencer }}</div>
+                        <div class="stats-label">Por Vencer</div>
+                    </div>
+                    <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
                 </div>
-                <div class="card-icon"><i class="fas fa-hourglass-half"></i></div>
             </div>
-        </div>
+        </a>
     </div>
+
 </div>
 
 <div class="card card-dashboard mt-4">

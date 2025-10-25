@@ -13,7 +13,35 @@ use Carbon\Carbon;
 
 class OsarioController extends Controller
 {
-    public function trasladoForm()
+    public function index()
+    {
+        $osarios = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])->whereNotNull('id_difunto')->get();
+        return view('osario.index', compact('osarios'));
+    }
+    public function downloadPdf($id)
+    {
+        $osario = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])->findOrFail($id);
+
+        $difunto = $osario->difunto;
+        $contrato = ContratoAlquiler::where('id_difunto', $difunto->id_difunto ?? 0)
+            ->where('id_osario', $osario->id_osario)
+            ->latest()
+            ->first();
+
+        $usuario = auth()->user();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.contrato_osario', compact('osario', 'contrato', 'usuario', 'difunto'));
+        return $pdf->download('contrato_osario_'.$osario->id_osario.'.pdf');
+    }
+    public function mapa()
+    {
+        $pabellones = Pabellon::with(['osarios' => function($q) {
+            $q->orderBy('fila')->orderBy('columna');
+        }])->where('tipo', 'osario')->get();
+
+        return view('osario.mapa_osarios', compact('pabellones'));
+    }
+    public function trasladoForm(Request $request)
     {
         $contratosElegibles = ContratoAlquiler::with(['difunto', 'nicho'])
             ->where('estado', 'activo')
@@ -21,12 +49,11 @@ class OsarioController extends Controller
             ->get();
 
         $osariosDisponibles = Osario::where('estado', 'disponible')->get();
-
         $trabajadores = \App\Models\Persona::where('id_tipo_persona', 6)->get();
+        $id_osario_preseleccionado = $request->id_osario ?? null;
 
-        return view('osario.traslado', compact('contratosElegibles', 'osariosDisponibles', 'trabajadores'));
+        return view('osario.traslado', compact('contratosElegibles', 'osariosDisponibles', 'trabajadores', 'id_osario_preseleccionado'));
     }
-
     public function trasladoStore(Request $request)
     {
         $request->validate([

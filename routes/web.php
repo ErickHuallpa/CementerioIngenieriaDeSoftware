@@ -15,6 +15,7 @@ use App\Http\Controllers\FallecidoController;
 use App\Http\Controllers\PendienteController;
 use App\Http\Controllers\BodegaController;
 use App\Http\Controllers\OsarioController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -39,6 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/edit', [DifuntoController::class, 'edit'])->name('difunto.edit');
         Route::put('/{id}', [DifuntoController::class, 'update'])->name('difunto.update');
         Route::get('/{id}/pdf', [DifuntoController::class, 'downloadPdf'])->name('difunto.downloadPdf');
+        Route::get('/mapa-nicho', [DifuntoController::class, 'mapaNichos'])->name('difunto.mapa_nicho');
     });
     Route::prefix('incineraciones')->group(function () {
         Route::get('/', [IncineracionController::class, 'index'])->name('incineracion.index');
@@ -47,6 +49,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/edit', [IncineracionController::class, 'edit'])->name('incineracion.edit');
         Route::put('/{id}', [IncineracionController::class, 'update'])->name('incineracion.update');
         Route::get('/{id}/pdf', [IncineracionController::class, 'downloadPdf'])->name('incineracion.downloadPdf');
+        Route::get('/colectiva', [IncineracionController::class, 'colectiva'])->name('incineracion.colectiva');
+        Route::post('/colectiva', [IncineracionController::class, 'storeColectiva'])->name('incineracion.storeColectiva');
     });
     Route::prefix('fallecidos')->group(function () {
         Route::get('/', [FallecidoController::class, 'index'])->name('fallecido.index');
@@ -71,10 +75,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/comprobante/pdf', [BodegaController::class, 'comprobantePDF'])->name('bodega.comprobante.pdf');
     });
     Route::prefix('osario')->group(function () {
+        Route::get('/', [OsarioController::class, 'index'])->name('osario.index');
         Route::get('/traslado', [OsarioController::class, 'trasladoForm'])->name('osario.traslado.form');
         Route::post('/traslado', [OsarioController::class, 'trasladoStore'])->name('osario.traslado.store');
+        Route::get('/{id}/pdf', [OsarioController::class, 'downloadPdf'])->name('osario.downloadPdf');
+        Route::get('/mapa', [OsarioController::class, 'mapa'])->name('osario.mapa');
     });
+
+    Route::get('/nicho/por_vencer', [NichoController::class, 'porVencer'])->name('nicho.por_vencer');
     Route::get('/nicho/mapa', [NichoController::class, 'mapa'])->name('nicho.mapa');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::middleware([AdminMiddleware::class, 'auth'])->group(function () {

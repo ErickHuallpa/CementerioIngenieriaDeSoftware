@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pabellon;
 use App\Models\Persona;
 use App\Models\Difunto;
 use App\Models\Nicho;
@@ -16,12 +17,17 @@ class DifuntoController extends Controller
 {
     public function index()
     {
-        $difuntos = Difunto::with(['persona', 'doliente', 'nicho.pabellon'])->get();
+        $difuntos = Difunto::with(['persona', 'doliente', 'nicho.pabellon'])
+            ->whereIn('estado', ['registrado', 'en_nicho'])
+            ->get();
+
         return view('difunto.index', compact('difuntos'));
     }
 
-    public function create()
+
+    public function create(Request $request)
     {
+        $nichoSeleccionado = $request->nicho;
         $difuntosSinNicho = Difunto::with('persona', 'doliente', 'programacionesEntierro')
             ->whereNull('id_nicho')
             ->where('estado', 'registrado')
@@ -38,8 +44,19 @@ class DifuntoController extends Controller
         $trabajadores = Persona::where('id_tipo_persona', 6)->get();
 
         return view('difunto.register_edit', compact(
-            'difuntosSinNicho', 'dolientes', 'nichosDisponibles', 'trabajadores'
+            'difuntosSinNicho', 'dolientes', 'nichosDisponibles', 'trabajadores', 'nichoSeleccionado'
         ));
+    }
+
+    public function mapaNichos()
+    {
+        $pabellones = Pabellon::with(['nichos' => function($q) {
+            $q->orderBy('fila')->orderBy('columna');
+        }])
+        ->where('tipo', 'comun')
+        ->get();
+
+        return view('difunto.mapa_nichos', compact('pabellones'));
     }
 
     public function store(Request $request)

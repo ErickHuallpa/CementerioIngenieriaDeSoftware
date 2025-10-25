@@ -6,7 +6,7 @@
         <div class="card-header bg-dark text-white">
             <h5>
                 <i class="fas fa-fire me-2"></i>
-                {{ isset($incineracion) ? 'Editar Incineración' : 'Registrar Incineración' }}
+                {{ isset($incineracion) ? 'Editar Incineración Individual' : 'Registrar Incineración Individual' }}
             </h5>
         </div>
         <form action="{{ isset($incineracion) ? route('incineracion.update', $incineracion->id_incineracion) : route('incineracion.store') }}" method="POST" class="card-body row g-3">
@@ -50,11 +50,8 @@
 
             <div class="col-md-6">
                 <label class="form-label">Tipo</label>
-                <select name="tipo" class="form-select" required>
-                    <option value="">Seleccione...</option>
-                    <option value="individual" {{ (isset($incineracion) && $incineracion->tipo=='individual') ? 'selected' : '' }}>Individual</option>
-                    <option value="colectiva" {{ (isset($incineracion) && $incineracion->tipo=='colectiva') ? 'selected' : '' }}>Colectiva</option>
-                </select>
+                <input type="text" class="form-control" value="individual" readonly>
+                <input type="hidden" name="tipo" value="individual">
             </div>
 
             <div class="col-md-6">

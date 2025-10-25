@@ -15,7 +15,7 @@
 <body>
 
     <h2>CONTRATO DE ARRENDAMIENTO DE NICHO</h2>
-    <h4>Cementerio Municipal</h4>
+    <h4>Cementerio General de Potosí</h4>
 
     <p><strong>Boleta N°:</strong> {{ $contrato->boleta_numero }} <br>
     <strong>Fecha de emisión:</strong> {{ now()->format('d/m/Y') }}</p>
@@ -77,14 +77,14 @@
             Ambas partes aceptan el contenido del presente contrato, firmando al pie en señal de conformidad.
         </p>
     </div>
-
+    <br>
     <div class="firma">
         <span>Firma del Arrendatario</span>
     </div>
-
+    <br>
+    <br>
     <div class="firma" style="margin-top: 40px;">
         <span>Responsable - Cementerio</span>
-        <small>{{ $usuario->nombre ?? $usuario->name }}</small>
     </div>
 
 </body>

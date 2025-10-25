@@ -76,17 +76,21 @@
 
         <div class="col-md-6 mt-4">
             <label class="form-label">Nicho</label>
-            <select name="id_nicho" class="form-select" required>
-                <option value="">Seleccione...</option>
-                @foreach($nichosDisponibles as $nicho)
-                    <option value="{{ $nicho->id_nicho }}"
-                        @if(isset($difunto) && $difunto->id_nicho == $nicho->id_nicho) selected @endif>
-                        {{ optional($nicho->pabellon)->nombre ?? 'Sin Pabellón' }} - 
-                        F{{ $nicho->fila }}C{{ $nicho->columna }} (Bs. {{ $nicho->costo_alquiler ?? 0 }})
-                    </option>
-                @endforeach
-            </select>
+            @if(isset($nichoSeleccionado))
+                @php
+                    $nicho = $nichosDisponibles->firstWhere('id_nicho', $nichoSeleccionado);
+                @endphp
+                <input type="hidden" name="id_nicho" value="{{ $nichoSeleccionado }}">
+                <div class="alert alert-success">
+                    Seleccionado: {{ optional($nicho->pabellon)->nombre ?? 'Sin Pabellón' }} - F{{ $nicho->fila }}C{{ $nicho->columna }}
+                </div>
+                <a href="{{ route('difunto.mapa_nicho') }}" class="btn btn-primary">Cambiar Nicho</a>
+            @else
+                <a href="{{ route('difunto.mapa_nicho') }}" class="btn btn-primary">Seleccionar Nicho</a>
+                <small class="text-muted d-block mt-1">Haz click para elegir un nicho desde el mapa.</small>
+            @endif
         </div>
+
 
         <div class="mt-4">
             <a href="{{ route('difunto.index') }}" class="btn btn-secondary">Cancelar</a>

@@ -5,7 +5,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-fire me-2"></i> Incineraciones</h2>
         <a href="{{ route('incineracion.create') }}" class="btn btn-primary-custom">
-            <i class="fas fa-plus-circle me-1"></i> Registrar Incineración
+            <i class="fas fa-plus-circle me-1"></i>  Incineración Individual</a>
+        <a href="{{ route('incineracion.colectiva') }}" class="btn btn-primary-custom">
+            <i class="fas fa-users-cog me-1"></i> Incineración Colectiva
         </a>
     </div>
 
