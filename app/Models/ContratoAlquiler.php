@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class ContratoAlquiler extends Model
 {
     use HasFactory;
+
     protected $table = 'contrato_alquiler';
     protected $primaryKey = 'id_contrato';
+
     protected $fillable = [
         'id_difunto',
         'id_nicho',
+        'id_osario',
         'fecha_inicio',
         'fecha_fin',
         'renovaciones',
@@ -20,22 +23,32 @@ class ContratoAlquiler extends Model
         'estado',
         'boleta_numero',
     ];
+
     public function difunto()
     {
         return $this->belongsTo(Difunto::class, 'id_difunto', 'id_difunto');
     }
+
     public function nicho()
     {
         return $this->belongsTo(Nicho::class, 'id_nicho', 'id_nicho');
     }
+
+    public function osario()
+    {
+        return $this->belongsTo(Osario::class, 'id_osario', 'id_osario');
+    }
+
     public function getEstaVencidoAttribute(): bool
     {
         return $this->fecha_fin && now()->greaterThan($this->fecha_fin);
     }
+
     public function scopeActivos($query)
     {
         return $query->where('estado', 'activo');
     }
+
     public function scopeVencidos($query)
     {
         return $query->where('estado', 'vencido');

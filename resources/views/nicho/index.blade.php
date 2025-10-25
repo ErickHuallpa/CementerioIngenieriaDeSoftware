@@ -2,81 +2,99 @@
 
 @section('content')
 <div class="container-fluid">
-    <h3 class="mb-4"><i class="fas fa-map-marked-alt me-2"></i>Mapa de Nichos</h3>
+    <h3 class="mb-4"><i class="fas fa-map-marked-alt me-2"></i>Mapa de Nichos y Osarios</h3>
 
     @forelse($pabellones as $pabellon)
-        <div class="card mb-4 shadow-lg border-0">
+        <div class="card mb-4 shadow border-0">
             <div class="card-header text-white" style="background: linear-gradient(90deg, #2c3e50, #16a085);">
-                <h5 class="mb-0"><i class="fas fa-building-columns me-2"></i>{{ $pabellon->nombre ?? 'Pabellón '.$pabellon->id_pabellon }}</h5>
+                <h5 class="mb-0">
+                    <i class="fas fa-building-columns me-2"></i>
+                    {{ $pabellon->nombre ?? 'Pabellón '.$pabellon->id_pabellon }}
+                    <small class="text-light">({{ ucfirst($pabellon->tipo) }})</small>
+                </h5>
                 <small>{{ $pabellon->descripcion ?? 'Sin descripción' }}</small>
             </div>
 
             <div class="card-body bg-light">
                 <div class="row justify-content-center">
-                    @for($fila = 1; $fila <= 3; $fila++)
-                        <div class="col-12 mb-3">
-                            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                @foreach(['A','B','C','D','E','F'] as $col)
+                    @php
+                        $isOsario = $pabellon->tipo === 'osario';
+
+                        // Filas y columnas
+                        $maxFila   = $isOsario ? 5 : 3;
+                        $columnas  = $isOsario ? range('A','J') : ['A','B','C','D','E','F'];
+
+                        // Tamaños
+                        $cardWidth  = $isOsario ? '90px'  : '120px';
+                        $cardHeight = $isOsario ? '90px'  : '165px';
+                        $fontSize   = $isOsario ? '0.65rem' : '0.8rem';
+                    @endphp
+
+                    @for($fila = 1; $fila <= $maxFila; $fila++)
+                        <div class="col-12 mb-2">
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                                @foreach($columnas as $col)
                                     @php
-                                        $nicho = $pabellon->nichos->first(fn($n) => strtoupper($n->columna) === $col && $n->fila == $fila);
-                                        $difunto = $nicho?->difuntos?->last();
+                                        if($isOsario){
+                                            $item = $pabellon->osarios->first(fn($o) => strtoupper($o->columna) === $col && $o->fila == $fila);
+                                            $difunto = $item?->difunto;
+                                        } else {
+                                            $item = $pabellon->nichos->first(fn($n) => strtoupper($n->columna) === $col && $n->fila == $fila);
+                                            $difunto = $item?->difuntos?->last();
+                                        }
+
                                         $persona = $difunto?->persona;
 
-                                        $porVencer = $nicho && $nicho->fecha_vencimiento
-                                            && \Carbon\Carbon::parse($nicho->fecha_vencimiento)->between($hoy, $unMes);
+                                        $color = match($item->estado ?? null) {
+                                            'disponible'  => '#c8f7c5',
+                                            'ocupado'     => '#f7c5c5',
+                                            'por_vencer'  => '#fff6bf',
+                                            'vencido'     => '#d6d8d9',
+                                            default       => '#efefef'
+                                        };
                                     @endphp
 
-                                    <div class="card text-center shadow-sm position-relative"
-                                         style="width: 120px; height: 160px; border-radius: 10px;
-                                                background: {{ $nicho ? match($nicho->estado) {
-                                                    'disponible' => '#d4edda',
-                                                    'ocupado' => '#f8d7da',
-                                                    'por_vencer' => '#fff3cd',
-                                                    'vencido' => '#d6d8d9',
-                                                    default => '#f0f0f0'
-                                                } : '#f0f0f0' }};
-                                                border: 2px solid #ccc;">
-                                        <div style="font-size: 0.8rem; font-weight: bold; margin-top: 5px;">
+                                    <div class="card shadow-sm position-relative text-center"
+                                         style="width: {{ $cardWidth }}; height: {{ $cardHeight }};
+                                                border-radius: 10px;
+                                                background: {{ $color }};
+                                                border: 2px solid #bfbfbf;
+                                                font-size: {{ $fontSize }};">
+
+                                        <div style="font-weight: bold; margin-top: 4px;">
                                             {{ $col }}{{ $fila }}
                                         </div>
 
                                         @if($difunto)
-                                            <div class="p-2" style="font-size: 0.8rem;">
-                                                <i class="fas fa-cross text-danger mb-1"></i>
-                                                <div style="font-weight: bold;">{{ $persona->nombre }} {{ $persona->apellido }}</div>
-                                                <div class="text-muted" style="font-size: 0.7rem;">
-                                                    ✝ {{ \Carbon\Carbon::parse($difunto->fecha_fallecimiento)->format('d/m/Y') }}
+                                            <div class="px-1">
+                                                <div style="font-weight: bold;">
+                                                    {{ $persona->nombre }} {{ $persona->apellido }}
                                                 </div>
-                                                <div class="text-muted" style="font-size: 0.7rem;">
-                                                    ⚰️ {{ \Carbon\Carbon::parse($difunto->fecha_entierro)->format('d/m/Y') }}
-                                                </div>
-                                            </div>
-                                        @elseif($nicho)
-                                            <div class="p-2">
-                                                <div class="text-muted small">{{ ucfirst($nicho->estado) }}</div>
+                                                @unless($isOsario)
+                                                    <div class="text-muted" style="font-size: 0.65rem;">
+                                                        ✝ {{ \Carbon\Carbon::parse($difunto->fecha_fallecimiento)->format('d/m/Y') }}
+                                                    </div>
+                                                @endunless
                                             </div>
                                         @else
-                                            <div class="p-2">
-                                                <div class="text-muted small">Sin registro</div>
+                                            <div class="text-muted" style="margin-top: 5px;">
+                                                {{ $item ? ucfirst($item->estado) : 'Sin registro' }}
                                             </div>
                                         @endif
 
-                                        {{-- Icono de advertencia por vencer --}}
-                                        @if($porVencer)
-                                            <div style="position:absolute; top:5px; right:5px; color:#856404;">
-                                                <i class="fas fa-exclamation-triangle" title="Por vencer en un mes"></i>
-                                            </div>
-                                        @endif
-
-                                        {{-- Efecto de "piedra" --}}
-                                        <div style="position:absolute; bottom:5px; left:0; right:0; font-size:0.7rem; color:#666;">
+                                        <div style="position:absolute; bottom:2px; left:0; right:0; color:#555; font-size:0.6rem;">
                                             <i class="fas fa-church"></i>
                                         </div>
+
                                     </div>
+
                                 @endforeach
+
                             </div>
                         </div>
                     @endfor
+
                 </div>
             </div>
         </div>

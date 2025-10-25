@@ -22,4 +22,8 @@ class Pabellon extends Model
     {
         return $this->hasMany(Nicho::class, 'id_pabellon', 'id_pabellon');
     }
+    public function osarios()
+    {
+        return $this->hasMany(Osario::class, 'id_pabellon', 'id_pabellon');
+    }
 }

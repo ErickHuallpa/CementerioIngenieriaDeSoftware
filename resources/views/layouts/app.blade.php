@@ -100,51 +100,45 @@
 
                     <ul class="nav nav-pills flex-column mb-auto">
 
-                        {{-- ADMIN o EMPLEADO ven el Dashboard --}}
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro','Responsable de Bodega','Responsable de Incineración']))
                             <li><a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-gauge-high me-2"></i> Panel Principal</a></li>
                         @endif
 
-                        {{-- ENTIERROS PENDIENTES + PROGRAMACIÓN solo: ADMIN, EMPLEADO, RESPONSABLE ENTIERRO --}}
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
                             <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
                             <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-cross me-2"></i> Programación Entierros</a></li>
                         @endif
 
-                        {{-- REGISTRO DIFUNTO solo ADMIN o EMPLEADO --}}
                         @if(in_array($tipo, ['Administrador','Empleado']))
                             <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Difunto</a></li>
                         @endif
 
-                        {{-- MAPA NICHO: ADMIN, EMPLEADO, RESPONSABLE ENTIERRO --}}
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
-                            <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos</a></li>
+                            <li><a href="{{ route('nicho.mapa') }}" class="nav-link"><i class="fas fa-map-location-dot me-2"></i> Mapa de Nichos/Osarios</a></li>
+
+                            <li><a href="{{ route('osario.traslado.form') }}" class="nav-link">
+                                <i class="fas fa-arrow-right-to-bracket me-2"></i> Traslado a Osario
+                            </a></li>
                         @endif
 
-                        {{-- BODEGA: solo ADMIN, EMPLEADO, RESPONSABLE BODEGA --}}
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Bodega']))
                             <li><a href="{{ route('bodega.index') }}" class="nav-link"><i class="fas fa-warehouse me-2"></i> Bodega</a></li>
                         @endif
 
-                        {{-- INCINERACION: solo ADMIN, EMPLEADO, RESPONSABLE INCINERACION --}}
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Incineración']))
                             <li><a href="{{ route('incineracion.index') }}" class="nav-link"><i class="fas fa-fire me-2"></i> Incineraciones</a></li>
                         @endif
 
-                        {{-- DOLIENTES: solo ADMIN o EMPLEADO --}}
                         @if(in_array($tipo, ['Administrador','Empleado']))
                             <li><a href="{{ route('clientes.index') }}" class="nav-link"><i class="fas fa-users me-2"></i> Dolientes</a></li>
                         @endif
 
-                        {{-- ADMIN: Personal y Reportes --}}
                         @if($tipo === 'Administrador')
                             <li><a href="{{ route('users.index') }}" class="nav-link"><i class="fas fa-user-gear me-2"></i> Personal</a></li>
                             <li><a href="#" class="nav-link"><i class="fas fa-chart-pie me-2"></i> Reportes</a></li>
                         @endif
 
                     </ul>
-
-
 
                     <div class="mt-auto pt-3 border-top border-light">
                         <div class="d-flex align-items-center">
@@ -165,8 +159,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Main content -->
             <div class="col-md-9 col-lg-10 main-content">
                 @yield('content')
             </div>

@@ -36,6 +36,11 @@ class Difunto extends Model
         return $this->belongsTo(Nicho::class, 'id_nicho', 'id_nicho');
     }
 
+    public function osario()
+    {
+        return $this->hasOne(Osario::class, 'id_difunto', 'id_difunto');
+    }
+
     public function contratos()
     {
         return $this->hasMany(ContratoAlquiler::class, 'id_difunto', 'id_difunto');
@@ -49,5 +54,10 @@ class Difunto extends Model
     public function scopeSinNicho($query)
     {
         return $query->whereNull('id_nicho')->where('estado', 'registrado');
+    }
+
+    public function scopeEnOsario($query)
+    {
+        return $query->where('estado', 'osario');
     }
 }

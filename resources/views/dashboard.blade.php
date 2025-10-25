@@ -131,6 +131,9 @@
             <a href="{{ route('nicho.create') }}" class="btn btn-primary-custom">
                 <i class="fas fa-layer-group me-1"></i> Registrar Nicho
             </a>
+            <a href="{{ route('osario.create') }}" class="btn btn-primary-custom">
+                <i class="fas fa-layer-group me-1"></i> Registrar Osario
+            </a>
         @endif
     </div>
 </div>
