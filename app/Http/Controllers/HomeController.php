@@ -15,6 +15,13 @@ class HomeController extends Controller
     {
         $hoy = Carbon::now();
         $unMes = $hoy->copy()->addMonth();
+        $user = Auth::user();
+        $pendientesUsuario = 0;
+        if($user && $user->persona){
+            $pendientesUsuario = $user->persona->programacionesEntierro()
+                ->pendientes()
+                ->count();
+        }
         $totalNichos = Nicho::count();
         $nichosOcupados = Nicho::where('estado', 'ocupado')->count();
         $nichosDisponibles = Nicho::where('estado', 'disponible')->count();
@@ -37,9 +44,9 @@ class HomeController extends Controller
             ->whereNotNull('fecha_salida')
             ->where('fecha_salida', '<', $hoy)
             ->count();
-
         return view('dashboard', [
-            'usuario' => Auth::user(),
+            'usuario' => $user,
+            'pendientesUsuario' => $pendientesUsuario,
             'totalNichos' => $totalNichos,
             'nichosOcupados' => $nichosOcupados,
             'nichosDisponibles' => $nichosDisponibles,
@@ -52,6 +59,7 @@ class HomeController extends Controller
             'osariosVencidos' => $osariosVencidos,
         ]);
     }
+
 
     public function buscarDifunto(Request $request)
     {

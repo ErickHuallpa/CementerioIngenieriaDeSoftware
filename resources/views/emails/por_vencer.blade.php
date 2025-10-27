@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Notificación de Alquiler por Vencer</title>
+    <title>Cementerio General de Potosí</title>
 </head>
 <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f4f4; color:#34495e;">
     <table width="100%" cellpadding="0" cellspacing="0">

@@ -27,7 +27,6 @@ class OsarioController extends Controller
     public function downloadPdf($id)
     {
         $osario = Osario::with(['difunto.persona', 'difunto.doliente', 'pabellon'])->findOrFail($id);
-
         $difunto = $osario->difunto;
         $contrato = ContratoAlquiler::where('id_difunto', $difunto->id_difunto ?? 0)
             ->where('id_osario', $osario->id_osario)
@@ -53,7 +52,6 @@ class OsarioController extends Controller
             ->where('estado', 'activo')
             ->whereDate('fecha_fin', '<=', Carbon::now()->addMonth())
             ->get();
-
         $osariosDisponibles = Osario::where('estado', 'disponible')->get();
         $trabajadores = \App\Models\Persona::where('id_tipo_persona', 6)->get();
         $id_osario_preseleccionado = $request->id_osario ?? null;
@@ -68,28 +66,22 @@ class OsarioController extends Controller
             'id_trabajador' => 'required|exists:persona,id_persona',
             'observacion' => 'nullable|string|max:255',
         ]);
-
         $contrato = ContratoAlquiler::with(['difunto', 'nicho'])->findOrFail($request->id_contrato);
         $osario = Osario::findOrFail($request->id_osario);
         $difunto = $contrato->difunto;
-
         if (!$difunto || !$contrato->nicho) {
             return redirect()->back()->with('error', 'Datos incompletos para realizar el traslado.');
         }
-
         $fechaFinContrato = Carbon::parse($contrato->fecha_fin);
         if ($fechaFinContrato->greaterThan(Carbon::now()->addMonth())) {
             return redirect()->back()->with('error', 'El contrato no puede ser trasladado todavía.');
         }
-
         DB::transaction(function () use ($difunto, $contrato, $osario, $request) {
-
             $renovaciones = $contrato->renovaciones ?? 0;
             $contrato->update([
                 'estado' => 'renovado',
                 'renovaciones' => $renovaciones + 1
             ]);
-
             if ($difunto->id_nicho && $difunto->nicho) {
                 $difunto->nicho->update([
                     'estado' => 'disponible',
@@ -97,12 +89,10 @@ class OsarioController extends Controller
                     'fecha_vencimiento' => null,
                 ]);
             }
-
             $difunto->update([
                 'id_nicho' => null,
                 'estado' => 'osario',
             ]);
-
             $fechaIngreso = Carbon::now();
             $fechaSalida = $fechaIngreso->copy()->addYears(5);
             $osario->update([
@@ -112,7 +102,6 @@ class OsarioController extends Controller
                 'fecha_salida' => $fechaSalida->toDateString(),
                 'costo' => $osario->costo ?? 0,
             ]);
-
             ContratoAlquiler::create([
                 'id_difunto' => $difunto->id_difunto,
                 'id_osario' => $osario->id_osario,
@@ -121,9 +110,8 @@ class OsarioController extends Controller
                 'renovaciones' => 0,
                 'monto' => $osario->costo ?? 0,
                 'estado' => 'activo',
-                'boleta_numero' => 'B-' . strtoupper(uniqid()),
+                'boleta_numero' => $this->generarNumeroBoleta(),
             ]);
-
             ProgramacionEntierro::create([
                 'id_difunto' => $difunto->id_difunto,
                 'id_trabajador' => $request->id_trabajador,
@@ -133,7 +121,13 @@ class OsarioController extends Controller
             ]);
 
         });
-
         return redirect()->route('osario.traslado.form')->with('success', 'Traslado a osario registrado correctamente.');
     }
+    private function generarNumeroBoleta()
+    {
+        $ultimo = \App\Models\ContratoAlquiler::latest('id_contrato')->first();
+        $numero = $ultimo ? intval(substr($ultimo->boleta_numero, 2)) + 1 : 1;
+        return 'B-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+    }
+
 }

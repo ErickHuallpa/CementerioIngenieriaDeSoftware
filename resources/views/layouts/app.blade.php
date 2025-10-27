@@ -108,14 +108,11 @@
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
                             <li><a href="{{ route('difunto.index') }}" class="nav-link"><i class="fas fa-cross me-2"></i> Programación Entierros</a></li>
                         @endif
-                        @if(in_array($tipo, ['Administrador','Responsable de Entierro']))
-                            <li><a href="{{ route('pendientes.index') }}" class="nav-link"><i class="fas fa-list-check me-2"></i>Entierros Pendientes</a></li>
-                        @endif
                         @if(in_array($tipo, ['Administrador','Empleado']))
                             <li><a href="{{ route('fallecido.index') }}" class="nav-link"><i class="fas fa-book-medical me-2"></i> Registro Difunto</a></li>
                         @endif
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Entierro']))
-                            <li><a href="{{ route('osario.index') }}" class="nav-link"><i class="fas fa-cube me-2"></i> Osarios</a></li>
+                            <li><a href="{{ route('osario.index') }}" class="nav-link"><i class="fas fa-cube me-2"></i>Traslados a Osarios</a></li>
                         @endif
                         @if(in_array($tipo, ['Administrador','Empleado','Responsable de Bodega']))
                             <li><a href="{{ route('bodega.index') }}" class="nav-link"><i class="fas fa-warehouse me-2"></i> Bodega</a></li>
@@ -156,6 +153,41 @@
             </div>
             <div class="col-md-9 col-lg-10 main-content">
                 @yield('content')
+
+                @php
+                    $showPendientesBtn = in_array($tipo, ['Administrador','Responsable de Entierro']);
+                @endphp
+
+                @if($showPendientesBtn)
+                    <a href="{{ route('pendientes.index') }}" class="btn-pendientes position-fixed d-flex align-items-center justify-content-center"
+                    style="bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; z-index: 1050;
+                            background: linear-gradient(135deg, #2c3e50, #16a085); 
+                            color: white; 
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+                            font-size: 1.5rem; 
+                            transition: transform 0.2s;">
+                        <i class="fas fa-cross"></i>
+
+                        @if(isset($pendientesUsuario) && $pendientesUsuario > 0)
+                            <span style="
+                                position: absolute;
+                                top: -8px;
+                                right: -8px;
+                                width: 22px;
+                                height: 22px;
+                                border-radius: 50%;
+                                background-color: red;
+                                color: white;
+                                font-size: 0.75rem;
+                                font-weight: bold;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                            ">{{ $pendientesUsuario }}</span>
+                        @endif
+                    </a>
+                @endif
             </div>
         </div>
     </div>

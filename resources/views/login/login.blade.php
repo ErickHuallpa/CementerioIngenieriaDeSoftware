@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Sistema de Cementerio</title>
+    <title>Cementerio General de Potosí</title>
     <link rel="icon" href="{{ asset('img/logo.ico') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -200,8 +200,6 @@
         .register-link:hover {
             text-decoration: underline;
         }
-
-        /* Password toggle */
         .toggle-password {
             cursor: pointer;
         }
@@ -224,11 +222,10 @@
         <div class="login-left">
             <div class="logo">
                 <img src="{{ asset('img/logo1.png') }}" alt="Logo Cementerio" class="logo-img mb-3">
-                <h2 class="logo-text">Sistema Cementerio "Potosí"</h2>
+                <h2 class="logo-text">Cementerio General de Potosí</h2>
             </div>
 
             <h2 class="welcome-text">Bienvenido de nuevo</h2>
-            <p class="subtitle">Accede a tu cuenta para gestionar el sistema</p>
 
             <ul class="features-list">
                 <li>

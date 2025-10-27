@@ -1,29 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Comprobante de Entierro #{{ $programacion->id_programacion }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #222; margin: 25px; }
-        header { text-align: center; margin-bottom: 10px; }
-        h1 { font-size: 16px; margin: 0; }
-        .sub { font-size: 11px; color: #555; margin-bottom: 8px; }
-        .section { margin-top: 14px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-        td, th { padding: 6px 8px; border: 1px solid #ddd; vertical-align: top; }
-        th { background: #f4f4f4; text-align: left; }
-        .two-col td { border: none; padding: 2px 0; }
-        .footer { margin-top: 24px; text-align: center; font-size: 11px; color: #666; }
+        @page { margin: 35px 35px; }
+        body { font-family: "DejaVu Sans", sans-serif; color: #2c3e50; font-size: 12px; line-height: 1.45; }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #16a085;
+            --light: #f7fafb;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .brand img {
+            width: 58px;
+            height: 58px;
+            border-radius: 6px;
+        }
+
+        .brand h1 {
+            font-size: 16px;
+            margin: 0;
+            color: var(--primary);
+            letter-spacing: 0.6px;
+        }
+
+        .brand small {
+            display: block;
+            color: var(--secondary);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .meta {
+            text-align: right;
+            font-size: 11px;
+            color: var(--secondary);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 12px;
+        }
+
+        .section {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: var(--light);
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+        }
+
+        .section h4 {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            vertical-align: top;
+            font-size: 12px;
+        }
+
+        th {
+            background: #f7fafb;
+            color: var(--secondary);
+            font-weight: 700;
+            text-align: left;
+            border: 1px solid #e6e9eb;
+        }
+
+        td {
+            border: 1px solid #e6e9eb;
+        }
+
+        .label { font-weight: 700; }
+
+        .firma {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .firma-line {
+            margin-top: 48px;
+            border-top: 1px solid #aab6bd;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 6px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 35px;
+            right: 35px;
+            text-align: center;
+            font-size: 10px;
+            color: #7f8c8d;
+            border-top: 1px dashed #e1e6e9;
+            padding-top: 6px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>COMPROBANTE DE SERVICIO - ENTIERRO</h1>
-        <div class="sub">Comprobante N°: {{ $programacion->id_programacion }} — Fecha emisión: {{ now()->format('d/m/Y') }}</div>
-    </header>
 
-    <div class="section">
-        <strong>I. Datos del Difunto</strong>
+<header>
+    <div class="brand">
+        <img src="https://i.imgur.com/TpdeOo1_d.png" alt="Logo Cementerio">
+        <div>
+            <h1>Cementerio General de Potosí</h1>
+            <small>Dirección administrativa · Sistema de Gestión Funeraria</small>
+        </div>
+    </div>
+    <div class="meta">
+        <div>Comprobante N°: {{ $programacion->id_programacion }}</div>
+        <div>Fecha emisión: {{ now()->format('d/m/Y') }}</div>
+        <div class="muted">Documento generado electrónicamente</div>
+    </div>
+</header>
+
+<main>
+    <h2 class="title">Comprobante de Servicio - Entierro</h2>
+
+    <section class="section">
+        <h4>I. Datos del Difunto</h4>
         <table>
             <tr>
                 <th>Nombre</th>
@@ -38,10 +168,10 @@
                 <td>{{ $programacion->difunto->fecha_entierro ?? '—' }}</td>
             </tr>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
-        <strong>II. Nicho</strong>
+    <section class="section">
+        <h4>II. Nicho</h4>
         <table>
             @if($programacion->difunto->nicho)
             <tr>
@@ -60,10 +190,10 @@
             <tr><td colspan="4">El difunto no tiene nicho asignado.</td></tr>
             @endif
         </table>
-    </div>
+    </section>
 
-    <div class="section">
-        <strong>III. Programación</strong>
+    <section class="section">
+        <h4>III. Programación</h4>
         <table>
             <tr>
                 <th>Fecha programada</th>
@@ -78,10 +208,10 @@
                 <td>Entierro municipal</td>
             </tr>
         </table>
-    </div>
+    </section>
 
-    <div class="section">
-        <strong>IV. Trabajador Responsable</strong>
+    <section class="section">
+        <h4>IV. Trabajador Responsable</h4>
         <table>
             @if($programacion->trabajador)
             <tr>
@@ -94,10 +224,16 @@
             <tr><td colspan="4">No hay trabajador registrado.</td></tr>
             @endif
         </table>
-    </div>
+    </section>
 
-    <div class="footer">
-        Documento generado por el sistema de gestión del cementerio. Este comprobante acredita la prestación del servicio de entierro.
+    <div class="firma">
+        <div class="firma-line">Firma Responsable</div>
     </div>
+</main>
+
+<footer>
+    Cementerio General de Potosí — Sistema de Gestión Funeraria
+</footer>
+
 </body>
 </html>
