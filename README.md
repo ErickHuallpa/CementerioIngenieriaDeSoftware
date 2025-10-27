@@ -103,12 +103,28 @@ INSERT INTO public.nicho
 (id_pabellon, fila, columna, posicion, costo_alquiler, estado, fecha_ocupacion, fecha_vencimiento, created_at, updated_at)
 VALUES
 -- Pabellón 1
+INSERT INTO public.nicho
+(id_pabellon, fila, columna, posicion, costo_alquiler, estado, fecha_ocupacion, fecha_vencimiento, created_at, updated_at)
+VALUES
+-- Pabellón 1
 (1, 1, 'A', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
 (1, 1, 'B', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 1, 'C', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 1, 'D', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 1, 'E', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 1, 'F', 'superior', 521, 'disponible', NULL, NULL, NOW(), NOW()),
 (1, 2, 'A', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
 (1, 2, 'B', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 2, 'C', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 2, 'D', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 2, 'E', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 2, 'F', 'medio', 621, 'disponible', NULL, NULL, NOW(), NOW()),
 (1, 3, 'A', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW()),
-(1, 3, 'B', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW());
+(1, 3, 'B', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 3, 'C', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 3, 'D', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 3, 'E', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW()),
+(1, 3, 'F', 'inferior', 721, 'disponible', NULL, NULL, NOW(), NOW());
 -- Repetir según sea necesario para todos los pabellones y posiciones
 ```
 
