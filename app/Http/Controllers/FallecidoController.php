@@ -9,10 +9,38 @@ use Illuminate\Support\Facades\DB;
 
 class FallecidoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $difuntos = Difunto::with(['persona', 'doliente'])->whereNull('id_nicho')->get();
-        return view('fallecido.index', compact('difuntos'));
+        $orden = $request->get('orden', 'apellido');
+        $tipo = $request->get('tipo', 'asc');
+
+        $difuntos = Difunto::with(['persona', 'doliente'])
+            ->join('persona', 'difunto.id_persona', '=', 'persona.id_persona')
+            ->leftJoin('persona as dol', 'difunto.id_doliente', '=', 'dol.id_persona');
+        switch ($orden) {
+            case 'nombre_difunto':
+            case 'apellido_difunto':
+                $difuntos = $difuntos->orderBy('persona.apellido', $tipo)
+                                     ->orderBy('persona.nombre', $tipo);
+                break;
+            case 'doliente':
+                $difuntos = $difuntos->orderBy('dol.apellido', $tipo)
+                                     ->orderBy('dol.nombre', $tipo);
+                break;
+            case 'fecha_fallecimiento':
+                $difuntos = $difuntos->orderBy('difunto.fecha_fallecimiento', $tipo);
+                break;
+            case 'estado':
+                $difuntos = $difuntos->orderBy('difunto.estado', $tipo);
+                break;
+            default:
+                $difuntos = $difuntos->orderBy('persona.apellido', 'asc');
+        }
+
+        $difuntos = $difuntos->select('difunto.*')->get();
+        $nextTipo = $tipo === 'asc' ? 'desc' : 'asc';
+
+        return view('fallecido.index', compact('difuntos', 'orden', 'tipo', 'nextTipo'));
     }
 
     public function create()
@@ -23,18 +51,6 @@ class FallecidoController extends Controller
             ->get();
 
         return view('fallecido.register', compact('dolientes'));
-    }
-
-    public function buscarPersona(Request $request)
-    {
-        $ci = $request->get('query');
-        if(!$ci) return response()->json([]);
-
-        $persona = Persona::where('ci', $ci)
-            ->whereNotNull('id_tipo_persona')
-            ->first();
-
-        return response()->json($persona ? [$persona] : []);
     }
 
     public function store(Request $request)

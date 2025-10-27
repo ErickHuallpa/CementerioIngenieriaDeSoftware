@@ -21,8 +21,8 @@ class ReporteController extends Controller
             'difuntos' => 'Listado de Difuntos',
             'bodega' => 'Difuntos en Bodega',
             'incineraciones' => 'Incineraciones',
-            'contratos' => 'Contratos de Alquiler',
             'entierros' => 'Programación de Entierros',
+            'flujo_caja' => 'Flujo de Caja',
         ];
 
         return view('reporte.index', compact('tipos'));
@@ -82,9 +82,21 @@ class ReporteController extends Controller
                 break;
 
             case 'entierros':
-                $query = ProgramacionEntierro::with('difunto.persona', 'trabajador');
-                if ($inicio && $fin) $query->whereBetween('fecha_programada', [$inicio, $fin]);
+                $query = ProgramacionEntierro::with('difunto.persona', 'trabajador')
+                            ->where('estado', 'completado');
+                if ($inicio && $fin) {
+                    $query->whereBetween('fecha_programada', [$inicio, $fin]);
+                }
                 $datos = $query->orderBy('fecha_programada', 'asc')->get();
+                break;
+
+
+            case 'flujo_caja':
+                $query = ContratoAlquiler::with('difunto.persona');
+                if ($inicio && $fin) $query->whereBetween('fecha_inicio', [$inicio, $fin]);
+                $datos = $query->orderBy('fecha_inicio', 'asc')->get();
+                $total = $datos->sum('monto');
+                return view('reporte.reporte_flujo_caja', compact('datos', 'total', 'inicio', 'fin'));
                 break;
 
             default:

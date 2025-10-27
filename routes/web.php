@@ -32,6 +32,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/buscar', [HomeController::class, 'buscarDifunto'])->name('dashboard.buscar');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::post('/clientes', [ClienteController::class, 'store'])->name('clientes.store');
     Route::prefix('difuntos')->group(function () {

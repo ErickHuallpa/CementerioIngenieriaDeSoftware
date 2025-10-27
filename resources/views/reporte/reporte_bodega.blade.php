@@ -16,8 +16,8 @@
                     <tr>
                         <th>Difunto</th>
                         <th>CI</th>
+                        <th>Doliente</th>
                         <th>Fecha Ingreso</th>
-                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -25,8 +25,8 @@
                         <tr>
                             <td>{{ $bodega->difunto->persona->nombre ?? '—' }} {{ $bodega->difunto->persona->apellido ?? '' }}</td>
                             <td>{{ $bodega->difunto->persona->ci ?? '—' }}</td>
+                            <td>{{ optional($bodega->difunto->doliente)->nombre ?? '—' }} {{ optional($bodega->difunto->doliente)->apellido ?? '' }}</td>
                             <td>{{ $bodega->fecha_ingreso ?? '—' }}</td>
-                            <td>{{ ucfirst($bodega->estado ?? '—') }}</td>
                         </tr>
                     @empty
                         <tr>
