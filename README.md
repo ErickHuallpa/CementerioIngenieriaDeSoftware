@@ -94,9 +94,9 @@ VALUES
 (5, 'Pabellon Jesús Nazareno', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW()),
 (6, 'Pabellon San Marcos', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW()),
 (7, 'Pabellon San José', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW()),
-(8, 'Pabellon Santa Ana', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW()),
-(9, 'Pabellon Virgen del Carmen', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW()),
-(10, 'Pabellon San Rafael', 'Destinado a difuntos', 'comun', NULL, NOW(), NOW());
+(8, 'Pabellon Santa Ana', 'Destinado a difuntos', 'osario', NULL, NOW(), NOW()),
+(9, 'Pabellon Virgen del Carmen', 'Destinado a difuntos', 'osario', NULL, NOW(), NOW()),
+(10, 'Pabellon San Rafael', 'Destinado a difuntos', 'osario', NULL, NOW(), NOW());
 
 -- Nichos (ejemplo automático para los 10 pabellones, puedes replicar el patrón)
 INSERT INTO public.nicho
