@@ -132,7 +132,7 @@
                     <div class="col-md-6">
                         <label for="id_osario" class="form-label">Osario disponible</label>
                         <div class="input-group">
-                            <select name="id_contrato" id="id_contrato" class="form-select" disabled required>
+                            <select name="id_osario" id="id_osario" class="form-select" required>
                                 <option value="">-- Seleccione osario --</option>
                                 @foreach($osariosDisponibles as $osario)
                                     <option value="{{ $osario->id_osario }}"
@@ -150,7 +150,7 @@
 
                     <div class="col-md-6">
                         <label for="id_trabajador" class="form-label">Trabajador encargado</label>
-                        <select name="id_trabajador" id="id_trabajador" class="form-select" disabled required>
+                        <select name="id_trabajador" id="id_trabajador" class="form-select" required>
                             <option value="">-- Seleccione trabajador --</option>
                             @foreach($trabajadores as $trabajador)
                                 <option value="{{ $trabajador->id_persona }}">
@@ -168,7 +168,7 @@
 
                     <div class="col-12 text-end">
                         <a href="{{ route('osario.index') }}" class="btn btn-outline-secondary me-2">Volver</a>
-                        <button type="submit" id="btn_confirmar" class="btn btn-success" disabled>Confirmar traslado</button>
+                        <button type="submit" id="btn_confirmar" class="btn btn-success">Confirmar traslado</button>
                     </div>
 
                 </div>
