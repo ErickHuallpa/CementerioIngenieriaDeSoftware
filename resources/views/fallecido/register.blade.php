@@ -56,7 +56,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ isset($difunto) ? route('fallecido.update', $difunto->id_difunto) : route('fallecido.store') }}" method="POST">
+            <form action="{{ isset($difunto) ? route('fallecido.update', $difunto->id_difunto) : route('fallecido.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @if(isset($difunto)) @method('PUT') @endif
 
@@ -68,19 +68,37 @@
                 </div>
                 @endif
 
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{ $difunto->persona->nombre ?? old('nombre') }}" required>
+                        <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" value="{{ $difunto->persona->nombre ?? old('nombre') }}" required>
+                        @error('nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Apellido</label>
-                        <input type="text" name="apellido" id="apellido" class="form-control" value="{{ $difunto->persona->apellido ?? old('apellido') }}" required>
+                        <input type="text" name="apellido" id="apellido" class="form-control @error('apellido') is-invalid @enderror" value="{{ $difunto->persona->apellido ?? old('apellido') }}" required>
+                        @error('apellido')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">CI</label>
-                        <input type="text" name="ci" id="ci" class="form-control" value="{{ $difunto->persona->ci ?? old('ci') }}">
+                        <input type="text" name="ci" id="ci" class="form-control @error('ci') is-invalid @enderror" value="{{ $difunto->persona->ci ?? old('ci') }}">
+                        @error('ci')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="col-md-6">
@@ -99,6 +117,18 @@
                     <div class="col-md-6">
                         <label class="form-label">Fecha de Fallecimiento</label>
                         <input type="date" name="fecha_fallecimiento" class="form-control" value="{{ $difunto->fecha_fallecimiento ?? old('fecha_fallecimiento') }}" required>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Documento de Defunción (Opcional)</label>
+                        <input type="file" name="documento_defuncion" class="form-control @error('documento_defuncion') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        @if(isset($difunto) && $difunto->documento_defuncion)
+                            <small class="form-text text-muted">Documento actual: <a href="{{ asset('storage/' . $difunto->documento_defuncion) }}" target="_blank">Ver documento</a></small>
+                        @endif
+                        @error('documento_defuncion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Formatos permitidos: PDF, JPG, JPEG, PNG, DOC, DOCX. Tamaño máximo: 5MB.</small>
                     </div>
                 </div>
 

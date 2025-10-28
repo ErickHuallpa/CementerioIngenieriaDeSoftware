@@ -19,6 +19,7 @@ class Difunto extends Model
         'fecha_fallecimiento',
         'fecha_entierro',
         'estado',
+        'documento_defuncion',
     ];
 
     public function persona()

@@ -35,7 +35,11 @@ class DifuntoController extends Controller
 
         $dolientes = Persona::whereHas('tipoPersona', function ($q) {
             $q->whereRaw('LOWER(nombre_tipo) = ?', ['doliente']);
-        })->get();
+        })
+        ->orderBy('apellido', 'asc')
+        ->orderBy('nombre', 'asc')
+        ->get();
+
 
         $nichosDisponibles = Nicho::with('pabellon')
             ->whereRaw('LOWER(estado) = ?', ['disponible'])
@@ -85,11 +89,16 @@ class DifuntoController extends Controller
 
             } else {
                 $request->validate([
-                    'nombre' => 'required|string|max:100',
-                    'apellido' => 'required|string|max:100',
+                    'nombre' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+                    'apellido' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+                    'ci' => 'nullable|string|max:20|min:7',
                     'fecha_fallecimiento' => 'required|date',
                     'id_doliente' => 'required|exists:persona,id_persona',
                     'id_trabajador' => 'required|exists:persona,id_persona',
+                ], [
+                    'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+                    'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+                    'ci.min' => 'La cédula de identidad debe tener al menos 7 caracteres.',
                 ]);
 
                 $persona = Persona::create([

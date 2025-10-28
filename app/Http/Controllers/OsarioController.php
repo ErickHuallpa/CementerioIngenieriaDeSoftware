@@ -23,6 +23,36 @@ class OsarioController extends Controller
         $pabellones = Pabellon::where('tipo', 'osario')->get();
         return view('osario.register', compact('pabellones'));
     }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_pabellon' => 'required|exists:pabellon,id_pabellon',
+            'fila' => 'required|integer|min:1|max:5',
+            'columna' => 'required|in:A,B,C,D,E,F,G,H,I,J',
+        ]);
+
+        $existe = Osario::where('id_pabellon', $request->id_pabellon)
+            ->where('fila', $request->fila)
+            ->where('columna', $request->columna)
+            ->first();
+
+        if ($existe) {
+            return redirect()->back()->with('error', 'Este osario ya está registrado.')
+                ->with('osarioExistente', $existe);
+        }
+
+        Osario::create([
+            'id_pabellon' => $request->id_pabellon,
+            'fila' => $request->fila,
+            'columna' => $request->columna,
+            'estado' => 'disponible',
+            'costo' => 400,
+            'fecha_ingreso' => null,
+            'fecha_salida' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Osario registrado correctamente.');
+    }
 
     public function downloadPdf($id)
     {
@@ -121,7 +151,7 @@ class OsarioController extends Controller
             ]);
 
         });
-        return redirect()->route('osario.traslado.form')->with('success', 'Traslado a osario registrado correctamente.');
+        return redirect()->route('osario.index')->with('success', 'Traslado a osario registrado correctamente.');
     }
     private function generarNumeroBoleta()
     {

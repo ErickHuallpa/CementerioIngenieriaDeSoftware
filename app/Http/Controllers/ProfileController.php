@@ -32,10 +32,10 @@ class ProfileController extends Controller
                 'max:50',
                 Rule::unique('users', 'name')->ignore($user->id)
             ],
-            'ci' => 'required|string|max:20',
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'telefono' => 'nullable|string|max:20',
+            'ci' => 'required|string|max:20|min:7',
+            'nombre' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'apellido' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'telefono' => 'nullable|string|max:20|min:8',
             'direccion' => 'nullable|string|max:255',
             'email' => [
                 'required',
@@ -43,6 +43,11 @@ class ProfileController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id)
             ],
             'password' => 'nullable|min:6|confirmed',
+        ], [
+            'ci.min' => 'La cédula de identidad debe tener al menos 7 caracteres.',
+            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+            'telefono.min' => 'El teléfono debe tener al menos 8 caracteres.',
         ]);
 
         $persona->update([

@@ -12,7 +12,9 @@ return new class extends Migration
             $table->id('id_pabellon');
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->enum('tipo', ['institucional', 'comun'])->default('comun');
+            $table->enum('tipo', ['institucional', 'comun', 'osario'])
+                  ->default('comun');
+
             $table->string('institucion')->nullable();
             $table->timestamps();
         });

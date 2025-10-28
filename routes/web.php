@@ -105,5 +105,7 @@ Route::middleware([AdminMiddleware::class, 'auth'])->group(function () {
     Route::prefix('reportes')->group(function () {
         Route::get('/', [ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/generar', [ReporteController::class, 'generar'])->name('reportes.generar');
+        Route::post('/pdf', [ReporteController::class, 'generarPDF'])->name('reportes.pdf');
+
     });
 });

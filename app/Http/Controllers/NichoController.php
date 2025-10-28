@@ -13,7 +13,7 @@ class NichoController extends Controller
 {
     public function create()
     {
-        $pabellones = Pabellon::all();
+        $pabellones = Pabellon::where('tipo', 'comun')->get();
         return view('nicho.register', compact('pabellones'));
     }
 
@@ -21,18 +21,38 @@ class NichoController extends Controller
     {
         $request->validate([
             'id_pabellon' => 'required|exists:pabellon,id_pabellon',
-            'fila' => 'required|integer|min:1',
-            'columna' => 'required|string|max:1',
+            'fila' => 'required|integer|in:1,2,3',
+            'columna' => 'required|string|in:A,B,C,D,E,F',
             'posicion' => 'required|in:superior,medio,inferior',
-            'costo_alquiler' => 'required|numeric|min:0',
-            'estado' => 'required|in:disponible,ocupado,por_vencer,vencido',
-            'fecha_ocupacion' => 'nullable|date',
-            'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_ocupacion',
+        ]);
+        $existe = Nicho::where('id_pabellon', $request->id_pabellon)
+            ->where('fila', $request->fila)
+            ->where('columna', $request->columna)
+            ->where('posicion', $request->posicion)
+            ->first();
+
+        if ($existe) {
+            return redirect()->back()->with('error', 'Este nicho ya está registrado.')
+                ->with('nichoExistente', $existe);
+        }
+        $costo = match($request->posicion) {
+            'superior' => 521,
+            'medio' => 621,
+            'inferior' => 721,
+        };
+
+        Nicho::create([
+            'id_pabellon' => $request->id_pabellon,
+            'fila' => $request->fila,
+            'columna' => $request->columna,
+            'posicion' => $request->posicion,
+            'costo_alquiler' => $costo,
+            'estado' => 'disponible',
+            'fecha_ocupacion' => null,
+            'fecha_vencimiento' => null,
         ]);
 
-        Nicho::create($request->all());
-
-        return redirect()->route('dashboard')->with('success', 'Nicho registrado correctamente.');
+        return redirect()->back()->with('success', 'Nicho registrado correctamente.');
     }
 
     public function porVencer()
@@ -59,8 +79,6 @@ class NichoController extends Controller
     {
         $nicho = Nicho::with(['difuntos.persona', 'difuntos.doliente', 'pabellon'])
             ->findOrFail($id);
-
-        // Buscar por id_difunto y no por id
         $difunto = $nicho->difuntos->where('id_difunto', $difunto_id)->first();
 
         if (!$difunto) {

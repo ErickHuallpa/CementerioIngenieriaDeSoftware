@@ -4,20 +4,16 @@
 <div class="header d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="mb-0">Registrar Nicho</h2>
-        <p class="text-muted mb-0">Crea un nuevo nicho en el sistema</p>
+        <p class="text-muted mb-0">Registro individual de nichos por pabellón</p>
     </div>
 </div>
 
 <div class="card card-dashboard p-4">
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <strong>¡Error!</strong> Corrige los siguientes campos:
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
     <form action="{{ route('nicho.store') }}" method="POST">
@@ -33,49 +29,56 @@
             </select>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="fila" class="form-label">Fila</label>
-                <input type="number" id="fila" name="fila" class="form-control" min="1" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="columna" class="form-label">Columna</label>
-                <input type="text" id="columna" name="columna" class="form-control" required>
+        <div class="mb-3">
+            <label class="form-label">Fila</label>
+            <div class="d-flex gap-2 flex-wrap">
+                @foreach(range(1,3) as $fila)
+                    <div class="form-check">
+                        <input class="form-check-input fila-radio" type="radio" name="fila" id="fila_{{ $fila }}" value="{{ $fila }}" required>
+                        <label class="form-check-label" for="fila_{{ $fila }}">{{ $fila }}</label>
+                    </div>
+                @endforeach
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="posicion" class="form-label">Posición</label>
-            <select id="posicion" name="posicion" class="form-select" required>
-                <option value="">Seleccione una posición</option>
-                <option value="superior">Superior</option>
-                <option value="medio">Medio</option>
-                <option value="inferior">Inferior</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="costo_alquiler" class="form-label">Costo de Alquiler (Bs.)</label>
-            <input type="number" id="costo_alquiler" name="costo_alquiler" class="form-control" min="0" step="0.01" required>
-        </div>
-
-        <input type="hidden" name="estado" value="disponible">
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="fecha_ocupacion" class="form-label">Fecha de Ocupación</label>
-                <input type="date" id="fecha_ocupacion" name="fecha_ocupacion" class="form-control">
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="fecha_vencimiento" class="form-label">Fecha de Vencimiento</label>
-                <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" class="form-control">
+            <label class="form-label">Columna</label>
+            <div class="d-flex gap-2 flex-wrap">
+                @foreach(range('A','F') as $col)
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="columna" id="columna_{{ $col }}" value="{{ $col }}" required>
+                        <label class="form-check-label" for="columna_{{ $col }}">{{ $col }}</label>
+                    </div>
+                @endforeach
             </div>
         </div>
+
+        <input type="hidden" name="posicion" id="posicion">
 
         <div class="text-end">
             <a href="{{ route('dashboard') }}" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-success">Registrar</button>
+            <button type="submit" class="btn btn-success">Registrar Nicho</button>
         </div>
     </form>
+
+    @if(isset($nichoExistente))
+        <div class="alert alert-warning mt-3">
+            Este nicho ya existe: Fila {{ $nichoExistente->fila }}, Columna {{ $nichoExistente->columna }}, Posición: {{ $nichoExistente->posicion }}, Pabellón: {{ $nichoExistente->pabellon->nombre }}
+        </div>
+    @endif
 </div>
+
+<script>
+document.querySelectorAll('.fila-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+        let posicion = '';
+        switch(this.value) {
+            case '1': posicion = 'superior'; break;
+            case '2': posicion = 'medio'; break;
+            case '3': posicion = 'inferior'; break;
+        }
+        document.getElementById('posicion').value = posicion;
+    });
+});
+</script>
 @endsection

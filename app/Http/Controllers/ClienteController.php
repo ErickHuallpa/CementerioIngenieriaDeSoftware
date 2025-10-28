@@ -19,17 +19,35 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'ci' => 'required|string|max:20|unique:persona,ci',
-            'telefono' => 'nullable|string|max:20',
-            'direccion' => 'nullable|string|max:255',
+            'nombre' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'apellido' => 'required|string|max:100|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'ci' => 'required|string|max:20|unique:persona,ci|min:7',
+            'telefono' => 'nullable|string|max:20|min:8',
+            'direccion' => 'nullable|string|max:50|min:4',
             'email' => 'nullable|email|max:100',
             'id_tipo_persona' => 'required|exists:tipo_persona,id_tipo_persona',
+        ], [
+            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+            'ci.min' => 'La cédula de identidad debe tener al menos 7 caracteres.',
+            'ci.unique' =>'El CI ya pertenece a otra persona.',
+            'telefono.min' => 'El teléfono debe tener al menos 8 caracteres.',
+            'direccion.min' => 'La dirección debe tener al menos 4 caracteres.',
         ]);
 
-        Persona::create($request->all());
+        try {
+            Persona::create($request->all());
 
-        return redirect()->route('clientes.index')->with('success', 'Cliente registrado correctamente.');
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Cliente registrado correctamente.']);
+            }
+
+            return redirect()->route('clientes.index')->with('success', 'Cliente registrado correctamente.');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Error al registrar el cliente: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->withInput()->with('error', 'Error al registrar el cliente: ' . $e->getMessage());
+        }
     }
 }

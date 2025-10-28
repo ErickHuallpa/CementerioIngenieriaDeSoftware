@@ -53,14 +53,21 @@ class AuthController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
-            'ci' => 'required|string|max:20|unique:persona,ci',
-            'telefono' => 'nullable|string|max:15',
+            'ci' => 'required|min:7|string|max:20|unique:persona,ci',
+            'telefono' => 'nullable|string|min:7|max:15',
             'direccion' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:persona,email|unique:users,email',
             'name' => 'required|string|max:255|unique:users,name',
             'password' => 'required|string|min:8|confirmed',
             'id_tipo_persona' => 'required|integer|exists:tipo_persona,id_tipo_persona',
+        ], [
+            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+            'ci.min' => 'La cédula de identidad debe tener al menos 7 caracteres.',
+            'telefono.min' => 'El teléfono debe tener al menos 8 caracteres.',
+            'password.min' => 'El campo de contraseña debe tener al menos 8 caracteres.'
         ]);
+        
         $persona = Persona::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,

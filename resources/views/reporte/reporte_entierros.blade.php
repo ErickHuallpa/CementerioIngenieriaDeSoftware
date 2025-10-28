@@ -39,5 +39,16 @@
             </table>
         </div>
     </div>
+    <div class="mb-3 text-end">
+        <form action="{{ route('reportes.pdf') }}" method="POST" target="_blank">
+            @csrf
+            <input type="hidden" name="tipo_reporte" value="entierros">
+            <input type="hidden" name="fecha_inicio" value="{{ request('fecha_inicio') }}">
+            <input type="hidden" name="fecha_fin" value="{{ request('fecha_fin') }}">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-2"></i> Exportar a PDF
+            </button>
+        </form>
+    </div>
 </div>
 @endsection

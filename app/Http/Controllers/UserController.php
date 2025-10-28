@@ -24,14 +24,19 @@ class UserController extends Controller
     {
         $request->validate([
             'username' => 'required|string|max:255|unique:users,name',
-            'nombre' => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
-            'ci' => 'required|string|max:20|unique:persona,ci',
-            'telefono' => 'nullable|string|max:20',
+            'nombre' => 'required|string|max:255|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'apellido' => 'required|string|max:255|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\'-]+$/u',
+            'ci' => 'required|string|max:20|unique:persona,ci|min:7',
+            'telefono' => 'nullable|string|max:20|min:8',
             'direccion' => 'nullable|string|max:255',
             'email' => 'required|email|unique:persona,email|unique:users,email',
             'id_tipo_persona' => 'required|integer|in:1,2,4,6,7',
             'password' => 'required|string|min:6|confirmed',
+        ], [
+            'nombre.regex' => 'El nombre solo puede contener letras y espacios.',
+            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+            'ci.min' => 'La cédula de identidad debe tener al menos 7 caracteres.',
+            'telefono.min' => 'El teléfono debe tener al menos 8 caracteres.',
         ]);
 
         $persona = Persona::create([

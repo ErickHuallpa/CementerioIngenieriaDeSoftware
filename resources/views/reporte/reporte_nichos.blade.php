@@ -22,6 +22,17 @@
 <div class="container py-4">
     <div class="card shadow-sm">
         <div class="card-header">Reporte de Ocupación de Nichos</div>
+            <div class="mb-3 text-end">
+                <form action="{{ route('reportes.pdf') }}" method="POST" target="_blank">
+                    @csrf
+                    <input type="hidden" name="tipo_reporte" value="nichos">
+                    <input type="hidden" name="fecha_inicio" value="{{ request('fecha_inicio') }}">
+                    <input type="hidden" name="fecha_fin" value="{{ request('fecha_fin') }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-file-pdf me-2"></i> Exportar a PDF
+                    </button>
+                </form>
+            </div>
         <div class="card-body table-responsive">
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
